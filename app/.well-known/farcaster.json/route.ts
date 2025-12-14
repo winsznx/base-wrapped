@@ -1,8 +1,7 @@
 import { minikitConfig } from "../../../minikit.config";
 
 export async function GET() {
-  // Return the manifest in the exact format expected by Farcaster
-  // Per docs: use `accountAssociation` + `frame` keys
+  // Return the manifest with all fields populated
   const manifest = {
     accountAssociation: minikitConfig.accountAssociation,
     frame: {
@@ -14,8 +13,20 @@ export async function GET() {
       buttonTitle: minikitConfig.miniapp.buttonTitle,
       splashImageUrl: minikitConfig.miniapp.splashImageUrl,
       splashBackgroundColor: minikitConfig.miniapp.splashBackgroundColor,
+      // Optional fields for app store listing
+      webhookUrl: minikitConfig.miniapp.webhookUrl,
+      subtitle: minikitConfig.miniapp.subtitle,
+      description: minikitConfig.miniapp.description,
+      screenshotUrls: minikitConfig.miniapp.screenshotUrls,
+      primaryCategory: minikitConfig.miniapp.primaryCategory,
+      tags: minikitConfig.miniapp.tags,
+      heroImageUrl: minikitConfig.miniapp.heroImageUrl,
+      tagline: minikitConfig.miniapp.tagline,
+      ogTitle: minikitConfig.miniapp.ogTitle,
+      ogDescription: minikitConfig.miniapp.ogDescription,
+      ogImageUrl: minikitConfig.miniapp.ogImageUrl,
     },
   };
-  
+
   return Response.json(manifest);
 }
