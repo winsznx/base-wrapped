@@ -7,11 +7,11 @@ import styles from "./page.module.css";
 export default function Success() {
 
   const { composeCastAsync } = useComposeCast();
-  
+
   const handleShare = async () => {
     try {
-      const text = `Yay! I just joined the waitlist for ${minikitConfig.miniapp.name.toUpperCase()}! `;
-      
+      const text = `Yay! I just joined the waitlist for ${minikitConfig.frame.name.toUpperCase()}! `;
+
       const result = await composeCastAsync({
         text: text,
         embeds: [process.env.NEXT_PUBLIC_URL || ""]
@@ -33,7 +33,7 @@ export default function Success() {
       <button className={styles.closeButton} type="button">
         ✕
       </button>
-      
+
       <div className={styles.content}>
         <div className={styles.successMessage}>
           <div className={styles.checkmark}>
@@ -42,9 +42,9 @@ export default function Success() {
               <div className={styles.checkmarkKick}></div>
             </div>
           </div>
-          
-          <h1 className={styles.title}>Welcome to the {minikitConfig.miniapp.name.toUpperCase()}!</h1>
-          
+
+          <h1 className={styles.title}>Welcome to the {minikitConfig.frame.name.toUpperCase()}!</h1>
+
           <p className={styles.subtitle}>
             You&apos;re in! We&apos;ll notify you as soon as we launch.<br />
             Get ready to experience the future of onchain marketing.
