@@ -2,7 +2,7 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #000814 0%, #001d3d 50%, #000814 100%);
+  background: var(--gray-100);
   color: white;
 }
 
@@ -41,9 +41,12 @@
 .title {
   font-size: 48px;
   font-weight: 800;
-  color: #0052FF;
+  background: linear-gradient(135deg, #ffffff 0%, var(--base-cerulean) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 12px;
-  letter-spacing: -1px;
+  letter-spacing: -2px;
 }
 
 .subtitle {
@@ -87,12 +90,12 @@
   font-size: 18px;
   font-weight: 700;
   color: white;
-  background: #0052FF;
+  background: var(--base-blue);
   border: none;
-  border-radius: 999px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 8px 32px rgba(0, 82, 255, 0.4);
+  transition: all 0.3s var(--ease-out-expo);
+  box-shadow: 0 8px 32px rgba(0, 0, 255, 0.3);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -117,9 +120,8 @@
 }
 
 .primaryButton:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 40px rgba(0, 82, 255, 0.5);
-  background: #0066FF;
+  transform: scale(1.03);
+  box-shadow: 0 12px 40px rgba(0, 0, 255, 0.5);
 }
 
 .primaryButton:active {
@@ -137,15 +139,15 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.8);
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 255, 0.3);
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s var(--ease-out-expo);
 }
 
 .secondaryButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 255, 0.1);
+  border-color: var(--base-blue);
   color: white;
 }
 
@@ -238,7 +240,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #0052FF 0%, #003BB5 50%, #002266 100%);
+  background: var(--gray-100);
 }
 
 .loadingContent {

@@ -40,15 +40,15 @@
   justify-content: center;
   padding: 40px 24px;
   text-align: center;
-  animation: fadeIn 0.4s ease-out;
-  background: linear-gradient(180deg, #0052FF 0%, #003BB5 50%, #002266 100%);
+  animation: slideIn 0.5s var(--ease-out-expo);
+  background: var(--gray-100);
   color: white;
 }
 
-@keyframes fadeIn {
+@keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(30px);
   }
 
   to {
@@ -57,41 +57,85 @@
   }
 }
 
-/* All slides use same blue theme with slight variations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* Slide backgrounds - Base brand dark theme with accent gradients */
 .introSlide {
-  background: linear-gradient(180deg, #0052FF 0%, #003BB5 100%);
+  background: linear-gradient(180deg, var(--gray-100) 0%, #0a0b20 100%);
 }
 
 .txSlide {
-  background: linear-gradient(180deg, #0066FF 0%, #0044CC 100%);
+  background: linear-gradient(180deg, #0a0b0d 0%, #0a102a 50%, #0000ff 150%);
 }
 
 .gasSlide {
-  background: linear-gradient(180deg, #0052FF 0%, #003399 100%);
+  background: linear-gradient(180deg, #0a0b0d 0%, #1a0a1a 50%, #0a0b0d 100%);
 }
 
 .dappsSlide {
-  background: linear-gradient(180deg, #0044CC 0%, #002B80 100%);
+  background: linear-gradient(180deg, #0a0b0d 0%, #0a1a1a 100%);
 }
 
 .nftsSlide {
-  background: linear-gradient(180deg, #0055EE 0%, #003BB5 100%);
+  background: linear-gradient(180deg, #0a0b0d 0%, #1a0a2a 100%);
 }
 
 .tokensSlide {
-  background: linear-gradient(180deg, #0066FF 0%, #0044AA 100%);
+  background: linear-gradient(180deg, #0a0b0d 0%, #0a1a0a 100%);
 }
 
 .timeSlide {
-  background: linear-gradient(180deg, #0052FF 0%, #003399 100%);
-}
-
-.summarySlide {
-  background: linear-gradient(180deg, #0052FF 0%, #002266 100%);
+  background: linear-gradient(180deg, #0a0b0d 0%, #1a1a0a 100%);
 }
 
 .builderSlide {
-  background: linear-gradient(180deg, #6366F1 0%, #4F46E5 50%, #4338CA 100%);
+  background: linear-gradient(180deg, #0a0b0d 0%, #0a0a2a 100%);
+}
+
+.projectsSlide {
+  background: linear-gradient(180deg, #0a0b0d 0%, #0a102a 100%);
+}
+
+.accountsSlide {
+  background: linear-gradient(180deg, #0a0b0d 0%, #0a1a1a 100%);
+}
+
+.summarySlide {
+  background: linear-gradient(180deg, #0a0b0d 0%, #0000ff 200%);
 }
 
 /* Builder Score Circular Progress */
@@ -146,10 +190,12 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 255, 0.15);
+  border: 1px solid rgba(0, 0, 255, 0.3);
   border-radius: 999px;
   font-size: 14px;
   backdrop-filter: blur(10px);
+  animation: fadeUp 0.5s var(--ease-out-expo) backwards;
 }
 
 .noScore {
@@ -172,11 +218,15 @@
 }
 
 .heroTitle {
-  font-size: 64px;
+  font-size: 72px;
   font-weight: 800;
-  letter-spacing: -2px;
+  letter-spacing: -3px;
   margin: 0;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #ffffff 0%, var(--base-cerulean) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: countUp 0.6s var(--ease-out-expo);
 }
 
 .heroSubtitle {
@@ -217,11 +267,15 @@
 }
 
 .bigNumber {
-  font-size: 72px;
+  font-size: 80px;
   font-weight: 800;
-  letter-spacing: -3px;
+  letter-spacing: -4px;
   margin: 8px 0;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #ffffff 0%, var(--base-blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: countUp 0.6s var(--ease-out-expo);
 }
 
 .slideSubtitle {
@@ -235,13 +289,17 @@
 }
 
 .funFact {
-  font-size: 16px;
-  opacity: 0.8;
+  font-size: 14px;
+  opacity: 0.9;
   margin-top: 24px;
   padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
+  background: rgba(0, 0, 255, 0.1);
+  border: 1px solid rgba(0, 0, 255, 0.2);
+  border-radius: 12px;
   backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .subStats {
@@ -252,14 +310,14 @@
 }
 
 .successStat {
-  color: #86EFAC;
+  color: var(--base-lime);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .failStat {
-  color: #FCA5A5;
+  color: var(--base-red);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -493,15 +551,15 @@
 }
 
 .navButton {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
+  background: rgba(0, 0, 255, 0.15);
+  border: 1px solid rgba(0, 0, 255, 0.3);
   color: white;
   font-size: 18px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s var(--ease-out-expo);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -509,8 +567,10 @@
 }
 
 .navButton:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--base-blue);
+  border-color: var(--base-blue);
   transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(0, 0, 255, 0.4);
 }
 
 .navButton:disabled {
