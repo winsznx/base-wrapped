@@ -14,7 +14,7 @@ export const minikitConfig = {
   miniapp: {
     version: "1",
     name: "Base Wrapped",
-    subtitle: "Your 2025 Onchain Year in Review",
+    subtitle: "2025 Onchain Year in Review",
     description: "Discover your onchain story on Base. See your transaction count, gas spent, top dApps, NFTs minted, and more!",
     iconUrl: `${ROOT_URL}/icon.png`,
     homeUrl: ROOT_URL,
