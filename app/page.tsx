@@ -124,10 +124,6 @@ export default function Home() {
     }
   };
 
-  const handleDemo = () => {
-    fetchStats();
-  };
-
   const handleBackToLanding = () => {
     setViewState('landing');
     setStats(null);
