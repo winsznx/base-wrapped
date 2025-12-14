@@ -1,0 +1,255 @@
+.container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100dvh;
+    background: linear-gradient(180deg, #000814 0%, #001d3d 50%, #000814 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    overflow: hidden;
+    perspective: 1000px;
+}
+
+.container.exit {
+    animation: fadeOut 0.8s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.1);
+    }
+}
+
+/* Particles */
+.particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #0052FF;
+    border-radius: 50%;
+    opacity: 0;
+    animation: float-particle 4s ease-in-out infinite;
+}
+
+@keyframes float-particle {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: translateY(-100px) scale(1);
+    }
+}
+
+/* Logo */
+.logoWrapper {
+    transform-style: preserve-3d;
+    animation: logoEnter 1.5s ease-out forwards;
+}
+
+.logoWrapper.logoReady {
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoEnter {
+    0% {
+        opacity: 0;
+        transform: translateZ(-200px) rotateX(30deg) rotateY(-30deg) scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateZ(0) rotateX(0) rotateY(0) scale(1);
+    }
+}
+
+@keyframes logoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotateY(0deg);
+    }
+
+    25% {
+        transform: translateY(-10px) rotateY(5deg);
+    }
+
+    50% {
+        transform: translateY(0) rotateY(0deg);
+    }
+
+    75% {
+        transform: translateY(-10px) rotateY(-5deg);
+    }
+}
+
+.logoContainer {
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+.logoGlow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(0, 82, 255, 0.5) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    animation: glow 2s ease-in-out infinite;
+    filter: blur(20px);
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+.logo {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 10px 40px rgba(0, 82, 255, 0.5));
+    animation: logoShadow 2s ease-in-out infinite;
+}
+
+@keyframes logoShadow {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 10px 40px rgba(0, 82, 255, 0.5));
+    }
+
+    50% {
+        filter: drop-shadow(0 20px 60px rgba(0, 82, 255, 0.7));
+    }
+}
+
+.logoReflection {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    transform: scaleY(-0.3) translateY(-20px);
+    opacity: 0.2;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, transparent 100%);
+    filter: blur(2px);
+}
+
+.logoMirror {
+    opacity: 0.5;
+}
+
+/* Text */
+.textWrapper {
+    margin-top: 40px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+}
+
+.textWrapper.textVisible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.title {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.titleLine {
+    display: block;
+    font-size: 48px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: -1px;
+    text-shadow: 0 4px 20px rgba(0, 82, 255, 0.5);
+    animation: textGlow 2s ease-in-out infinite;
+}
+
+.titleLine:first-child {
+    color: #0052FF;
+    animation-delay: 0.1s;
+}
+
+@keyframes textGlow {
+
+    0%,
+    100% {
+        text-shadow: 0 4px 20px rgba(0, 82, 255, 0.5);
+    }
+
+    50% {
+        text-shadow: 0 4px 40px rgba(0, 82, 255, 0.8);
+    }
+}
+
+.year {
+    margin: 16px 0 0;
+    font-size: 24px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 8px;
+    animation: yearFade 0.8s ease-out 0.3s both;
+}
+
+@keyframes yearFade {
+    from {
+        opacity: 0;
+        letter-spacing: 20px;
+    }
+
+    to {
+        opacity: 1;
+        letter-spacing: 8px;
+    }
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+    .logo {
+        width: 100px;
+        height: 100px;
+    }
+
+    .titleLine {
+        font-size: 36px;
+    }
+
+    .year {
+        font-size: 18px;
+    }
+}
