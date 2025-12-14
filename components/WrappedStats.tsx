@@ -108,6 +108,26 @@ export function WrappedStats({ stats, isDemo }: WrappedStatsProps) {
         }
     };
 
+    const handleShare = (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        // Build share text with stats
+        const shareText = `My 2025 on Base:
+
+${stats.totalTransactions} transactions
+${stats.totalGasSpentEth} ETH in gas
+${stats.nftsMinted} NFTs minted
+${stats.uniqueContractsInteracted} dApps used
+${stats.builderScore ? `Builder Score: ${stats.builderScore}` : ''}
+
+Get your Base Wrapped`;
+
+        const appUrl = 'https://base-wrapped-nine.vercel.app';
+        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(appUrl)}`;
+
+        window.open(warpcastUrl, '_blank');
+    };
+
     const slideType = SLIDES[currentSlide];
 
     return (
@@ -340,7 +360,7 @@ export function WrappedStats({ stats, isDemo }: WrappedStatsProps) {
                             </div>
                         </div>
                         <p className={styles.summaryTagline}>Based and onchain</p>
-                        <button className={styles.shareButton}>
+                        <button className={styles.shareButton} onClick={handleShare}>
                             <span className={styles.icon}>{Icons.share}</span>
                             Share Your Wrapped
                         </button>
