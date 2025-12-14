@@ -57,7 +57,6 @@ export default function Home() {
   const { connect, connectors } = useConnect();
   const [viewState, setViewState] = useState<ViewState>('intro');
   const [stats, setStats] = useState<WrappedStatsType | null>(null);
-  const [isDemo, setIsDemo] = useState(false);
   const [error, setError] = useState("");
   const [manualAddress, setManualAddress] = useState("");
   const [showAddressInput, setShowAddressInput] = useState(false);
@@ -73,21 +72,16 @@ export default function Home() {
     setViewState('landing');
   }, []);
 
-  const fetchStats = useCallback(async (userAddress?: string, _isManual = false) => {
+  const fetchStats = useCallback(async (userAddress: string) => {
     setViewState('loading');
     setError("");
 
     try {
-      const url = userAddress
-        ? `/api/wrapped?address=${userAddress}`
-        : `/api/wrapped?demo=true`;
-
-      const response = await fetch(url);
+      const response = await fetch(`/api/wrapped?address=${userAddress}`);
       const data = await response.json();
 
       if (data.success) {
         setStats(data.stats);
-        setIsDemo(data.isDemo || false);
         setViewState('wrapped');
 
         // Show message if no transactions found
@@ -109,7 +103,7 @@ export default function Home() {
     if (isConnected && connectedAddress) {
       fetchStats(connectedAddress);
     } else if (manualAddress && /^0x[a-fA-F0-9]{40}$/.test(manualAddress)) {
-      fetchStats(manualAddress, true);
+      fetchStats(manualAddress);
     } else {
       setShowAddressInput(true);
     }
@@ -118,7 +112,7 @@ export default function Home() {
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (manualAddress && /^0x[a-fA-F0-9]{40}$/.test(manualAddress)) {
-      fetchStats(manualAddress, true);
+      fetchStats(manualAddress);
     } else {
       setError("Please enter a valid Ethereum address (0x...)");
     }
@@ -160,7 +154,7 @@ export default function Home() {
           </svg>
           Back
         </button>
-        <WrappedStats stats={stats} isDemo={isDemo} />
+        <WrappedStats stats={stats} />
       </div>
     );
   }

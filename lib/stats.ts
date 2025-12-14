@@ -446,5 +446,46 @@ export function generateMockStats(): WrappedStats {
         busyDaysCount: 14,
         earlyBirdTxs: 12,
         nightOwlTxs: 34,
+        // New enhanced stats
+        personality: {
+            type: 'defi_degen',
+            title: 'DeFi Degen',
+            description: 'You live for the swap. DEXes are your second home.',
+            emoji: '📈',
+            color: '#00D395',
+        },
+        milestones: [
+            { id: 'century_club', title: 'Century Club', description: '100 transactions on Base', emoji: '💯', achieved: true },
+            { id: 'first_mint', title: 'First Mint', description: 'Minted your first NFT', emoji: '🎨', achieved: true },
+            { id: 'protocol_explorer', title: 'Protocol Explorer', description: 'Interacted with 20+ protocols', emoji: '🧭', achieved: true },
+            { id: 'power_user', title: 'Power User', description: '10+ days with 5+ transactions', emoji: '⚡', achieved: true },
+            { id: 'whale_watch', title: 'Whale Watch', description: 'Moved 10+ ETH on Base', emoji: '🐋', achieved: false },
+            { id: 'early_bird', title: 'Early Bird', description: 'Started before June 2025', emoji: '🌅', achieved: true },
+        ],
+        firstTransaction: {
+            hash: '0x1234567890abcdef...',
+            date: 'Jan 3, 2025',
+            type: 'contract_call',
+            value: '0.05',
+        },
+        peakDay: {
+            date: 'Oct 15, 2025',
+            txCount: 23,
+            description: 'You went absolutely wild!',
+        },
+        monthlyBreakdown: [
+            { month: 'January', txCount: 12 },
+            { month: 'February', txCount: 18 },
+            { month: 'March', txCount: 25 },
+            { month: 'April', txCount: 31 },
+            { month: 'May', txCount: 28 },
+            { month: 'June', txCount: 22 },
+            { month: 'July', txCount: 19 },
+            { month: 'August', txCount: 24 },
+            { month: 'September', txCount: 33 },
+            { month: 'October', txCount: 45 },
+            { month: 'November', txCount: 38 },
+            { month: 'December', txCount: 12 },
+        ],
     };
 }

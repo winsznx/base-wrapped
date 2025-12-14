@@ -1,67 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { calculateWrappedStats, generateMockStats } from '@/lib/stats';
+import { calculateWrappedStats } from '@/lib/stats';
 import { getBuilderData } from '@/lib/talentprotocol';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const address = searchParams.get('address');
-    const demo = searchParams.get('demo') === 'true';
-
-    // Return mock data for demo mode
-    if (demo) {
-        const mockStats = generateMockStats();
-        // Add mock builder score and socials for demo
-        mockStats.builderScore = 72;
-        mockStats.builderScoreBreakdown = {
-            github: 25,
-            twitter: 15,
-            onchain: 18,
-            farcaster: 8,
-            identity: 4,
-            other: 2,
-        };
-        mockStats.talentProfile = {
-            displayName: 'Based Builder',
-            bio: 'Building on Base since day one 🔵',
-            verified: true,
-            humanCheckmark: true,
-        };
-        mockStats.socials = {
-            farcaster: { username: 'basedbuilder', followers: 1234 },
-            twitter: { username: 'basedbuilder_', followers: 5678 },
-            github: { username: 'basedbuilder' },
-        };
-        mockStats.accounts = [
-            { source: 'wallet', verified: true },
-            { source: 'farcaster', verified: true },
-            { source: 'github', verified: true },
-            { source: 'twitter', verified: true },
-        ];
-        mockStats.projects = [
-            {
-                name: 'Base Wrapped',
-                description: 'Your 2025 Onchain Year in Review',
-                url: 'https://base-wrapped-nine.vercel.app',
-                role: 'creator',
-            },
-            {
-                name: 'Onchain App',
-                description: 'A cool dApp on Base',
-                url: 'https://example.com',
-                role: 'contributor',
-            },
-        ];
-        mockStats.topCredentials = [
-            { name: 'GitHub Contributions', category: 'github', points: 25 },
-            { name: 'Onchain Transactions', category: 'onchain', points: 18 },
-            { name: 'Twitter Followers', category: 'twitter', points: 15 },
-        ];
-        return NextResponse.json({
-            success: true,
-            isDemo: true,
-            stats: mockStats,
-        });
-    }
 
     if (!address) {
         return NextResponse.json(

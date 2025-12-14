@@ -6,7 +6,6 @@ import styles from './WrappedStats.module.css';
 
 interface WrappedStatsProps {
     stats: WrappedStats;
-    isDemo?: boolean;
 }
 
 type SlideType = 'intro' | 'firstTx' | 'transactions' | 'gas' | 'peakDay' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'personality' | 'milestones' | 'builder' | 'projects' | 'accounts' | 'summary';
@@ -110,7 +109,7 @@ function formatNumber(num: number): string {
     return num.toString();
 }
 
-export function WrappedStats({ stats, isDemo }: WrappedStatsProps) {
+export function WrappedStats({ stats }: WrappedStatsProps) {
     const [currentSlide, setCurrentSlide] = useState(0);
 
     const nextSlide = () => {
@@ -149,12 +148,6 @@ Get your Base Wrapped`;
 
     return (
         <div className={styles.container}>
-            {isDemo && (
-                <div className={styles.demoBanner}>
-                    Demo Mode - Connect wallet to see your real stats
-                </div>
-            )}
-
             <div className={styles.slideContainer} onClick={nextSlide}>
                 {slideType === 'intro' && (
                     <div className={`${styles.slide} ${styles.introSlide}`}>
