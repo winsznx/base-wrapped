@@ -57,7 +57,7 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
                 <div className={styles.logoContainer}>
                     <div className={styles.logoGlow} />
                     <Image
-                        src="/logo.png"
+                        src="/logo.svg"
                         alt="Base Wrapped"
                         width={140}
                         height={140}
@@ -66,7 +66,7 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
                     />
                     <div className={styles.logoReflection}>
                         <Image
-                            src="/logo.png"
+                            src="/logo.svg"
                             alt=""
                             width={140}
                             height={140}

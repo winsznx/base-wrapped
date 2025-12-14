@@ -175,7 +175,7 @@ export default function Home() {
       <div className={styles.heroSection}>
         <div className={styles.logoContainer}>
           <Image
-            src="/logo.png"
+            src="/logo.svg"
             alt="Base Wrapped"
             width={100}
             height={100}
