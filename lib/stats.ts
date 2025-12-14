@@ -10,6 +10,7 @@ import {
     getNFTTransfers,
     getERC1155Transfers,
 } from './basescan';
+import { determinePersonality, calculateMilestones } from './personality';
 
 // Known dApp contract addresses on Base
 const KNOWN_DAPPS: Record<string, string> = {
@@ -109,6 +110,41 @@ export interface WrappedStats {
         name: string;
         category: string;
         points: number;
+    }>;
+
+    // Personality System
+    personality?: {
+        type: string;
+        title: string;
+        description: string;
+        emoji: string;
+        color: string;
+    };
+    milestones?: Array<{
+        id: string;
+        title: string;
+        description: string;
+        emoji: string;
+        achieved: boolean;
+        achievedDate?: string;
+    }>;
+
+    // Enhanced stats
+    firstTransaction?: {
+        hash: string;
+        date: string;
+        type: string; // 'transfer', 'contract_call', 'bridge', etc.
+        value: string;
+    };
+    peakDay?: {
+        date: string;
+        txCount: number;
+        description: string;
+    };
+    monthlyBreakdown?: Array<{
+        month: string;
+        txCount: number;
+        topDapp?: string;
     }>;
 }
 
@@ -281,6 +317,56 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
     const firstTxDate = sortedTxs.length > 0 ? formatDate(sortedTxs[0].timeStamp) : 'N/A';
     const lastTxDate = sortedTxs.length > 0 ? formatDate(sortedTxs[sortedTxs.length - 1].timeStamp) : 'N/A';
 
+    // First transaction details
+    const firstTx = sortedTxs[0];
+    const firstTransaction = firstTx ? {
+        hash: firstTx.hash,
+        date: formatDate(firstTx.timeStamp),
+        type: firstTx.to ? 'contract_call' : 'transfer',
+        value: weiToEth(firstTx.value),
+    } : undefined;
+
+    // Peak day - find the day with most transactions
+    const peakDayEntry = Object.entries(dateCounts).sort((a, b) => b[1] - a[1])[0];
+    const peakDay = peakDayEntry ? {
+        date: peakDayEntry[0],
+        txCount: peakDayEntry[1],
+        description: peakDayEntry[1] >= 20 ? 'You went absolutely wild!' :
+            peakDayEntry[1] >= 10 ? 'Busy day on Base!' : 'Your most active day',
+    } : undefined;
+
+    // Monthly breakdown with top dApp per month
+    const monthlyBreakdown = Object.entries(monthCounts)
+        .sort((a, b) => {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            return months.indexOf(a[0]) - months.indexOf(b[0]);
+        })
+        .map(([month, txCount]) => ({ month, txCount, topDapp: topDapps[0]?.name }));
+
+    // Calculate personality
+    const personality = determinePersonality({
+        totalTransactions,
+        nftsMinted,
+        nftsReceived,
+        avgGasPerTx: weiToEth(avgGasPerTx),
+        firstTxDate,
+        topDapps,
+        topTokens,
+        uniqueContractsInteracted: Object.keys(contractCounts).length,
+        totalValueSentEth: weiToEth(totalValueSentWei.toString()),
+    });
+
+    // Calculate milestones
+    const milestones = calculateMilestones({
+        totalTransactions,
+        nftsMinted,
+        totalValueSentEth: weiToEth(totalValueSentWei.toString()),
+        firstTxDate,
+        uniqueContractsInteracted: Object.keys(contractCounts).length,
+        busyDaysCount,
+    });
+
     return {
         totalTransactions,
         successfulTransactions,
@@ -308,6 +394,12 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
         busyDaysCount,
         earlyBirdTxs,
         nightOwlTxs,
+        // New enhanced stats
+        personality,
+        milestones,
+        firstTransaction,
+        peakDay,
+        monthlyBreakdown,
     };
 }
 

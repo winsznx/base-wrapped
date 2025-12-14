@@ -122,6 +122,22 @@
   background: linear-gradient(180deg, #0a0b0d 0%, #1a1a0a 100%);
 }
 
+.firstTxSlide {
+  background: linear-gradient(180deg, #0a0b0d 0%, #0a1a2a 100%);
+}
+
+.peakDaySlide {
+  background: linear-gradient(180deg, #0a0b0d 0%, #2a0a1a 100%);
+}
+
+.personalitySlide {
+  background: linear-gradient(180deg, #0a0b0d 0%, color-mix(in srgb, var(--personality-color, #0000ff) 20%, #0a0b0d) 100%);
+}
+
+.milestonesSlide {
+  background: linear-gradient(180deg, #0a0b0d 0%, #1a1a0a 100%);
+}
+
 .builderSlide {
   background: linear-gradient(180deg, #0a0b0d 0%, #0a0a2a 100%);
 }
@@ -686,6 +702,124 @@
   margin-left: auto;
   color: #4ade80;
   font-weight: 600;
+}
+
+/* Story Cards */
+.storyCard {
+  background: rgba(0, 82, 255, 0.1);
+  border: 1px solid rgba(0, 82, 255, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  animation: fadeUp 0.6s var(--ease-out-expo);
+}
+
+.storyDate {
+  font-size: 14px;
+  color: var(--base-cerulean);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.storyText {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+/* Personality Slide */
+.personalityEmoji {
+  font-size: 72px;
+  margin-bottom: 16px;
+  animation: countUp 0.6s var(--ease-out-expo);
+}
+
+.personalityTitle {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--personality-color, white);
+  margin: 0 0 12px;
+  animation: fadeUp 0.5s var(--ease-out-expo) 0.1s both;
+}
+
+.personalityDesc {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  max-width: 280px;
+  animation: fadeUp 0.5s var(--ease-out-expo) 0.2s both;
+}
+
+/* Milestones/Badges */
+.badgesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 255, 0, 0.08);
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  animation: fadeUp 0.4s var(--ease-out-expo) both;
+}
+
+.badge:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.badge:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.badge:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.badge:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.badge:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.badge:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+.badgeEmoji {
+  font-size: 28px;
+}
+
+.badgeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.badgeTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+.badgeDesc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.noBadges {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  padding: 20px;
 }
 
 /* Responsive */

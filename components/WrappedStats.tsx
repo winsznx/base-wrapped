@@ -9,9 +9,9 @@ interface WrappedStatsProps {
     isDemo?: boolean;
 }
 
-type SlideType = 'intro' | 'transactions' | 'gas' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'builder' | 'projects' | 'accounts' | 'summary';
+type SlideType = 'intro' | 'firstTx' | 'transactions' | 'gas' | 'peakDay' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'personality' | 'milestones' | 'builder' | 'projects' | 'accounts' | 'summary';
 
-const SLIDES: SlideType[] = ['intro', 'transactions', 'gas', 'dapps', 'nfts', 'tokens', 'time', 'builder', 'projects', 'accounts', 'summary'];
+const SLIDES: SlideType[] = ['intro', 'firstTx', 'transactions', 'gas', 'peakDay', 'dapps', 'nfts', 'tokens', 'time', 'personality', 'milestones', 'builder', 'projects', 'accounts', 'summary'];
 
 // SVG Icons
 const Icons = {
@@ -172,6 +172,24 @@ Get your Base Wrapped`;
                     </div>
                 )}
 
+                {slideType === 'firstTx' && stats.firstTransaction && (
+                    <div className={`${styles.slide} ${styles.firstTxSlide}`}>
+                        <p className={styles.slideLabel}>Where It All Began</p>
+                        <h3 className={styles.slideTitle}>Your First Transaction</h3>
+                        <div className={styles.storyCard}>
+                            <p className={styles.storyDate}>{stats.firstTransaction.date}</p>
+                            <p className={styles.storyText}>
+                                You made your first move on Base — a {stats.firstTransaction.type === 'contract_call' ? 'contract interaction' : 'transfer'}
+                                {parseFloat(stats.firstTransaction.value) > 0 && ` worth ${stats.firstTransaction.value} ETH`}
+                            </p>
+                        </div>
+                        <p className={styles.funFact}>
+                            <span className={styles.icon}>{Icons.star}</span>
+                            And the rest is history
+                        </p>
+                    </div>
+                )}
+
                 {slideType === 'transactions' && (
                     <div className={`${styles.slide} ${styles.txSlide}`}>
                         <p className={styles.slideLabel}>This Year You Made</p>
@@ -203,6 +221,18 @@ Get your Base Wrapped`;
                         <p className={styles.funFact}>
                             That&apos;s about ${formatNumber(Math.round(parseFloat(stats.totalGasSpentEth) * 3500))} USD
                         </p>
+                    </div>
+                )}
+
+                {slideType === 'peakDay' && stats.peakDay && (
+                    <div className={`${styles.slide} ${styles.peakDaySlide}`}>
+                        <p className={styles.slideLabel}>Your Wildest Day</p>
+                        <div className={styles.bigNumber}>{stats.peakDay.txCount}</div>
+                        <p className={styles.slideSubtitle}>Transactions in One Day</p>
+                        <div className={styles.storyCard}>
+                            <p className={styles.storyDate}>{stats.peakDay.date}</p>
+                            <p className={styles.storyText}>{stats.peakDay.description}</p>
+                        </div>
                     </div>
                 )}
 
@@ -287,6 +317,36 @@ Get your Base Wrapped`;
                             )}
                             {stats.busyDaysCount > 0 && (
                                 <p><span className={styles.icon}>{Icons.flame}</span> {stats.busyDaysCount} power user days (5+ txs)</p>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {slideType === 'personality' && stats.personality && (
+                    <div className={`${styles.slide} ${styles.personalitySlide}`} style={{ '--personality-color': stats.personality.color } as React.CSSProperties}>
+                        <p className={styles.slideLabel}>Your Onchain Personality</p>
+                        <div className={styles.personalityEmoji}>{stats.personality.emoji}</div>
+                        <h2 className={styles.personalityTitle}>{stats.personality.title}</h2>
+                        <p className={styles.personalityDesc}>{stats.personality.description}</p>
+                    </div>
+                )}
+
+                {slideType === 'milestones' && stats.milestones && (
+                    <div className={`${styles.slide} ${styles.milestonesSlide}`}>
+                        <p className={styles.slideLabel}>Your Achievements</p>
+                        <h3 className={styles.slideTitle}>Badges Earned</h3>
+                        <div className={styles.badgesList}>
+                            {stats.milestones.filter(m => m.achieved).map((milestone) => (
+                                <div key={milestone.id} className={styles.badge}>
+                                    <span className={styles.badgeEmoji}>{milestone.emoji}</span>
+                                    <div className={styles.badgeInfo}>
+                                        <span className={styles.badgeTitle}>{milestone.title}</span>
+                                        <span className={styles.badgeDesc}>{milestone.description}</span>
+                                    </div>
+                                </div>
+                            ))}
+                            {stats.milestones.filter(m => m.achieved).length === 0 && (
+                                <p className={styles.noBadges}>Keep building to earn badges!</p>
                             )}
                         </div>
                     </div>
