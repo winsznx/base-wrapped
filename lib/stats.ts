@@ -86,12 +86,30 @@ export interface WrappedStats {
         bio?: string;
         imageUrl?: string;
         verified?: boolean;
+        humanCheckmark?: boolean;
     };
     socials?: {
         farcaster?: { username: string; followers: number };
         twitter?: { username: string; followers: number };
         github?: { username: string };
     };
+    // Talent Protocol Accounts & Projects
+    accounts?: Array<{
+        source: string;
+        verified: boolean;
+    }>;
+    projects?: Array<{
+        name: string;
+        description: string;
+        url: string;
+        logoUrl?: string;
+        role: string;
+    }>;
+    topCredentials?: Array<{
+        name: string;
+        category: string;
+        points: number;
+    }>;
 }
 
 function weiToEth(wei: string): string {

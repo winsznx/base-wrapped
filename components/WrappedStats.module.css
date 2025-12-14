@@ -525,6 +525,105 @@
   text-align: center;
 }
 
+/* Projects Slide */
+.projectsSlide {
+  background: linear-gradient(180deg, #0052FF 0%, #003BB5 100%);
+}
+
+.projectsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  margin: 20px 0;
+}
+
+.projectCard {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.projectName {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.projectRole {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.projectDesc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.accountsSection,
+.credentialsSection {
+  margin-top: 24px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.accountsLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.accountsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.accountBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+.credentialsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.credentialItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.credPoints {
+  margin-left: auto;
+  color: #4ade80;
+  font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 400px) {
   .heroTitle {

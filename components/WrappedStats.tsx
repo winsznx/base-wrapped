@@ -9,9 +9,9 @@ interface WrappedStatsProps {
     isDemo?: boolean;
 }
 
-type SlideType = 'intro' | 'transactions' | 'gas' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'builder' | 'summary';
+type SlideType = 'intro' | 'transactions' | 'gas' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'builder' | 'projects' | 'summary';
 
-const SLIDES: SlideType[] = ['intro', 'transactions', 'gas', 'dapps', 'nfts', 'tokens', 'time', 'builder', 'summary'];
+const SLIDES: SlideType[] = ['intro', 'transactions', 'gas', 'dapps', 'nfts', 'tokens', 'time', 'builder', 'projects', 'summary'];
 
 // SVG Icons
 const Icons = {
@@ -334,6 +334,61 @@ Get your Base Wrapped`;
                                     <p className={styles.funFact}>Claim your score at talent.protocol</p>
                                 </div>
                             </>
+                        )}
+                    </div>
+                )}
+
+                {slideType === 'projects' && (
+                    <div className={`${styles.slide} ${styles.projectsSlide}`}>
+                        <p className={styles.slideLabel}>Your Projects & Connections</p>
+                        {stats.projects && stats.projects.length > 0 ? (
+                            <>
+                                <h3 className={styles.slideTitle}>Builder Portfolio</h3>
+                                <div className={styles.projectsList}>
+                                    {stats.projects.slice(0, 3).map((project, i) => (
+                                        <div key={i} className={styles.projectCard}>
+                                            <div className={styles.projectName}>{project.name}</div>
+                                            <div className={styles.projectRole}>{project.role}</div>
+                                            {project.description && (
+                                                <div className={styles.projectDesc}>{project.description.slice(0, 60)}...</div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <div className={styles.noScore}>
+                                <p>No projects found</p>
+                            </div>
+                        )}
+                        {stats.accounts && stats.accounts.length > 0 && (
+                            <div className={styles.accountsSection}>
+                                <p className={styles.accountsLabel}>Connected Accounts</p>
+                                <div className={styles.accountsList}>
+                                    {stats.accounts.map((acc, i) => (
+                                        <div key={i} className={styles.accountBadge}>
+                                            <span className={styles.icon}>
+                                                {acc.verified ? Icons.check : Icons.x}
+                                            </span>
+                                            <span>{acc.source}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {stats.topCredentials && stats.topCredentials.length > 0 && (
+                            <div className={styles.credentialsSection}>
+                                <p className={styles.accountsLabel}>Top Credentials</p>
+                                <div className={styles.credentialsList}>
+                                    {stats.topCredentials.slice(0, 3).map((cred, i) => (
+                                        <div key={i} className={styles.credentialItem}>
+                                            <span className={styles.icon}>{Icons.star}</span>
+                                            <span>{cred.name}</span>
+                                            <span className={styles.credPoints}>{cred.points} pts</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         )}
                     </div>
                 )}

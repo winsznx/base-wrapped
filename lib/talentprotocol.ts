@@ -2,7 +2,7 @@
  * Talent Protocol API service for fetching builder reputation data.
  * @see https://docs.talentprotocol.com/docs/developers/talent-api/api-reference
  * 
- * Fetches: Builder Score, Profile, Socials (Farcaster, Twitter, GitHub), Credentials
+ * Fetches: Builder Score, Profile, Socials, Credentials, Accounts, Projects
  */
 
 const TALENT_API_URL = 'https://api.talentprotocol.com';
@@ -41,6 +41,25 @@ export interface Social {
     following?: number;
 }
 
+export interface Account {
+    id: string;
+    wallet?: string;
+    source: string;
+    verified: boolean;
+    profile_url?: string;
+}
+
+export interface Project {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    url: string;
+    logo_url?: string;
+    role: 'creator' | 'contributor';
+    verified: boolean;
+}
+
 export interface BuilderData {
     score: number | null;
     profile: TalentProfile | null;
@@ -60,6 +79,9 @@ export interface BuilderData {
         other: number;
     };
     topCredentials: Credential[];
+    accounts: Account[];
+    projects: Project[];
+    totalDataPoints: number;
 }
 
 async function fetchFromTalent<T>(endpoint: string, params?: Record<string, string>): Promise<T | null> {
@@ -114,6 +136,25 @@ export async function getBuilderScore(wallet: string): Promise<BuilderScore | nu
 }
 
 /**
+ * Get Builder Score for a Farcaster FID
+ */
+export async function getFarcasterScore(fid: number): Promise<BuilderScore | null> {
+    const response = await fetchFromTalent<{ scores: { fid: number; score: number }[] }>('/farcaster/scores', {
+        fids: fid.toString(),
+    });
+
+    if (response?.scores && response.scores.length > 0) {
+        return {
+            score: response.scores[0].score,
+            last_calculated_at: new Date().toISOString(),
+            calculating_score: false,
+        };
+    }
+
+    return null;
+}
+
+/**
  * Get credentials breakdown for a wallet address
  */
 export async function getCredentials(wallet: string): Promise<Credential[]> {
@@ -148,15 +189,39 @@ export async function getSocials(wallet: string): Promise<Social[]> {
 }
 
 /**
- * Get all builder data for a wallet - score, profile, socials, credentials breakdown
+ * Get connected accounts for a wallet
+ */
+export async function getAccounts(wallet: string): Promise<Account[]> {
+    const response = await fetchFromTalent<{ accounts: Account[] }>('/accounts', {
+        id: wallet,
+    });
+
+    return response?.accounts || [];
+}
+
+/**
+ * Get projects created by or contributed to by the wallet
+ */
+export async function getProjects(wallet: string): Promise<Project[]> {
+    const response = await fetchFromTalent<{ projects: Project[] }>('/projects', {
+        id: wallet,
+    });
+
+    return response?.projects || [];
+}
+
+/**
+ * Get all builder data for a wallet - score, profile, socials, credentials, accounts, projects
  */
 export async function getBuilderData(wallet: string): Promise<BuilderData> {
     // Fetch all data in parallel
-    const [score, credentials, profile, socials] = await Promise.all([
+    const [score, credentials, profile, socials, accounts, projects] = await Promise.all([
         getBuilderScore(wallet),
         getCredentials(wallet),
         getProfile(wallet),
         getSocials(wallet),
+        getAccounts(wallet),
+        getProjects(wallet),
     ]);
 
     // Parse socials
@@ -221,12 +286,17 @@ export async function getBuilderData(wallet: string): Promise<BuilderData> {
         .sort((a, b) => b.points - a.points)
         .slice(0, 5);
 
+    // Calculate total data points
+    const totalDataPoints = credentials.reduce((sum, c) => sum + (c.points > 0 ? 1 : 0), 0);
+
     console.log(`Builder data for ${wallet}:`, {
         score: score?.score,
         farcaster: parsedSocials.farcaster?.username,
         twitter: parsedSocials.twitter?.username,
         github: parsedSocials.github?.username,
         profileName: profile?.display_name,
+        accountsCount: accounts.length,
+        projectsCount: projects.length,
     });
 
     return {
@@ -236,5 +306,8 @@ export async function getBuilderData(wallet: string): Promise<BuilderData> {
         credentials,
         breakdown,
         topCredentials,
+        accounts,
+        projects,
+        totalDataPoints,
     };
 }
