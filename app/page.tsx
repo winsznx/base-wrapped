@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import Image from "next/image";
 import { IntroAnimation } from "@/components/IntroAnimation";
 import { WrappedStats } from "@/components/WrappedStats";
@@ -54,6 +54,7 @@ const Icons = {
 export default function Home() {
   const { isFrameReady, setFrameReady } = useMiniKit();
   const { address: connectedAddress, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
   const [viewState, setViewState] = useState<ViewState>('intro');
   const [stats, setStats] = useState<WrappedStatsType | null>(null);
   const [isDemo, setIsDemo] = useState(false);
@@ -218,13 +219,25 @@ export default function Home() {
             </form>
           ) : (
             <>
+              {/* Primary: Connect Wallet button (for Farcaster/Base wallet) */}
+              {connectors.length > 0 && (
+                <button
+                  className={styles.primaryButton}
+                  onClick={() => connect({ connector: connectors[0] })}
+                >
+                  <span className={styles.buttonIcon}>{Icons.wallet}</span>
+                  Connect Wallet
+                </button>
+              )}
+
+              {/* Secondary: Manual address entry */}
               <button
-                className={styles.primaryButton}
-                onClick={handleGetWrapped}
+                className={styles.secondaryButton}
+                onClick={() => setShowAddressInput(true)}
               >
-                <span className={styles.buttonIcon}>{Icons.wallet}</span>
                 Enter Wallet Address
               </button>
+
               <button
                 className={styles.secondaryButton}
                 onClick={handleDemo}
@@ -232,12 +245,6 @@ export default function Home() {
                 Try Demo
               </button>
             </>
-          )}
-
-          {!isConnected && !showAddressInput && (
-            <p className={styles.connectHint}>
-              Or open in Base app to connect your wallet
-            </p>
           )}
         </div>
 
