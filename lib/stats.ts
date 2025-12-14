@@ -28,6 +28,9 @@ const KNOWN_DAPPS: Record<string, string> = {
     '0x1111111254fb6c44bac0bed2854e76f90643097d': '1inch',
 };
 
+// Base App Beta NFT - minted when users register for Base app
+const BASE_APP_BETA_NFT = '0xe3eb165c9ed6d6d87a59c410c8f30babac44fefd';
+
 export interface WrappedStats {
     // Basic counts
     totalTransactions: number;
@@ -146,6 +149,13 @@ export interface WrappedStats {
         txCount: number;
         topDapp?: string;
     }>;
+
+    // Base App membership
+    baseAppJoinDate?: {
+        date: string;
+        tokenId?: string;
+        isEarlyAdopter: boolean; // Beta NFT holders are early adopters
+    };
 }
 
 function weiToEth(wei: string): string {
@@ -268,6 +278,17 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
     const topNFTCollections = Object.values(nftCollectionCounts)
         .sort((a, b) => b.count - a.count)
         .slice(0, 5);
+
+    // Detect Base App Beta NFT (join date)
+    const baseAppBetaNft = allNFTs.find(nft =>
+        nft.contractAddress.toLowerCase() === BASE_APP_BETA_NFT &&
+        nft.to.toLowerCase() === normalizedAddress
+    );
+    const baseAppJoinDate = baseAppBetaNft ? {
+        date: formatDate(baseAppBetaNft.timeStamp),
+        tokenId: baseAppBetaNft.tokenID,
+        isEarlyAdopter: true,
+    } : undefined;
 
     // Token stats
     const tokenCounts: Record<string, { name: string; symbol: string; count: number }> = {};
@@ -400,6 +421,7 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
         firstTransaction,
         peakDay,
         monthlyBreakdown,
+        baseAppJoinDate,
     };
 }
 

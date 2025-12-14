@@ -138,6 +138,16 @@
   background: linear-gradient(180deg, #0a0b0d 0%, #1a1a0a 100%);
 }
 
+.baseAppJoinedSlide {
+  background: linear-gradient(180deg, #0a0b0d 0%, #0000ff30 100%);
+}
+
+.baseAppLogo {
+  font-size: 64px;
+  margin-bottom: 16px;
+  animation: countUp 0.6s var(--ease-out-expo);
+}
+
 .builderSlide {
   background: linear-gradient(180deg, #0a0b0d 0%, #0a0a2a 100%);
 }

@@ -8,9 +8,9 @@ interface WrappedStatsProps {
     stats: WrappedStats;
 }
 
-type SlideType = 'intro' | 'firstTx' | 'transactions' | 'gas' | 'peakDay' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'personality' | 'milestones' | 'builder' | 'projects' | 'accounts' | 'summary';
+type SlideType = 'intro' | 'baseAppJoined' | 'firstTx' | 'transactions' | 'gas' | 'peakDay' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'personality' | 'milestones' | 'builder' | 'projects' | 'accounts' | 'summary';
 
-const SLIDES: SlideType[] = ['intro', 'firstTx', 'transactions', 'gas', 'peakDay', 'dapps', 'nfts', 'tokens', 'time', 'personality', 'milestones', 'builder', 'projects', 'accounts', 'summary'];
+const SLIDES: SlideType[] = ['intro', 'baseAppJoined', 'firstTx', 'transactions', 'gas', 'peakDay', 'dapps', 'nfts', 'tokens', 'time', 'personality', 'milestones', 'builder', 'projects', 'accounts', 'summary'];
 
 // SVG Icons
 const Icons = {
@@ -162,6 +162,26 @@ Get your Base Wrapped`;
                         <h1 className={styles.heroTitle}>Your 2025</h1>
                         <h2 className={styles.heroSubtitle}>on Base</h2>
                         <p className={styles.tapHint}>Tap to continue</p>
+                    </div>
+                )}
+
+                {slideType === 'baseAppJoined' && stats.baseAppJoinDate && (
+                    <div className={`${styles.slide} ${styles.baseAppJoinedSlide}`}>
+                        <p className={styles.slideLabel}>Welcome to Base</p>
+                        <div className={styles.baseAppLogo}>🔵</div>
+                        <h2 className={styles.slideTitle}>You Joined Base App</h2>
+                        <div className={styles.storyCard}>
+                            <p className={styles.storyDate}>{stats.baseAppJoinDate.date}</p>
+                            <p className={styles.storyText}>
+                                You&apos;re one of the early adopters who got the Beta NFT!
+                            </p>
+                        </div>
+                        {stats.baseAppJoinDate.isEarlyAdopter && (
+                            <p className={styles.funFact}>
+                                <span className={styles.icon}>{Icons.star}</span>
+                                OG Status Unlocked
+                            </p>
+                        )}
                     </div>
                 )}
 
