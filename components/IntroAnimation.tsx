@@ -57,19 +57,19 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
                 <div className={styles.logoContainer}>
                     <div className={styles.logoGlow} />
                     <Image
-                        src="/logo.svg"
-                        alt="Base Wrapped"
-                        width={140}
-                        height={140}
+                        src="/base-square.svg"
+                        alt="Base"
+                        width={120}
+                        height={120}
                         className={styles.logo}
                         priority
                     />
                     <div className={styles.logoReflection}>
                         <Image
-                            src="/logo.svg"
+                            src="/base-square.svg"
                             alt=""
-                            width={140}
-                            height={140}
+                            width={120}
+                            height={120}
                             className={styles.logoMirror}
                         />
                     </div>
@@ -79,8 +79,8 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
             {/* Text */}
             <div className={`${styles.textWrapper} ${phase === 'text' || phase === 'exit' ? styles.textVisible : ''}`}>
                 <h1 className={styles.title}>
-                    <span className={styles.titleLine}>Base</span>
-                    <span className={styles.titleLine}>Wrapped</span>
+                    <span className={styles.titleLine}>Your Year</span>
+                    <span className={styles.titleLine}>on Base</span>
                 </h1>
                 <p className={styles.year}>2025</p>
             </div>
