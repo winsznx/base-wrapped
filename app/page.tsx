@@ -171,21 +171,21 @@ export default function Home() {
       <div className={styles.heroSection}>
         <div className={styles.logoContainer}>
           <Image
-            src="/logo.svg"
-            alt="Base Wrapped"
-            width={100}
-            height={100}
+            src="/base-square.svg"
+            alt="Base"
+            width={80}
+            height={80}
             className={styles.logo}
             priority
           />
         </div>
 
-        <h1 className={styles.title}>Base Wrapped</h1>
-        <p className={styles.subtitle}>Your 2025 Onchain Year in Review</p>
+        <h1 className={styles.title}>Your Year on Base</h1>
+        <p className={styles.subtitle}>2025 Onchain Wrapped</p>
 
         <p className={styles.description}>
-          Discover your onchain story. See your transactions, gas spent,
-          favorite dApps, NFTs minted, and more!
+          See what you built. Your transactions, gas spent, dApps,
+          NFTs, and Builder Score — all in one place.
         </p>
 
         {error && <p className={styles.error}>{error}</p>}
@@ -258,7 +258,10 @@ export default function Home() {
       </div>
 
       <footer className={styles.footer}>
-        <p>Built for Base | 2025</p>
+        <p>Built on Base</p>
+        <p className={styles.footerLinks}>
+          Powered by Talent Protocol & Routescan
+        </p>
       </footer>
     </div>
   );

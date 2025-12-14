@@ -1,0 +1,105 @@
+.container {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--gray-100);
+    color: white;
+}
+
+.header {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.backLink:hover {
+    color: white;
+}
+
+.main {
+    flex: 1;
+    padding: 40px 24px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.logoContainer {
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 0 0 32px;
+    background: linear-gradient(135deg, #ffffff 0%, var(--base-cerulean) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section {
+    margin-bottom: 28px;
+}
+
+.section h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--base-cerulean);
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.section p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+}
+
+.sources {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.source {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    background: rgba(0, 0, 255, 0.08);
+    border: 1px solid rgba(0, 0, 255, 0.15);
+    border-radius: 12px;
+}
+
+.source strong {
+    font-size: 14px;
+    color: white;
+}
+
+.source span {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.footer {
+    padding: 24px 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 13px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer p {
+    margin: 0;
+}

@@ -93,6 +93,23 @@ const Icons = {
     ),
 };
 
+// Format numbers Base style: 100K, 1M, 1B
+function formatNumber(num: number): string {
+    if (num >= 1_000_000_000) {
+        return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+    }
+    if (num >= 1_000_000) {
+        return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    }
+    if (num >= 10_000) {
+        return (num / 1_000).toFixed(0) + 'K';
+    }
+    if (num >= 1_000) {
+        return num.toLocaleString();
+    }
+    return num.toString();
+}
+
 export function WrappedStats({ stats, isDemo }: WrappedStatsProps) {
     const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -157,13 +174,13 @@ Get your Base Wrapped`;
 
                 {slideType === 'transactions' && (
                     <div className={`${styles.slide} ${styles.txSlide}`}>
-                        <p className={styles.slideLabel}>This year you made</p>
-                        <div className={styles.bigNumber}>{stats.totalTransactions.toLocaleString()}</div>
-                        <p className={styles.slideSubtitle}>transactions on Base</p>
+                        <p className={styles.slideLabel}>This Year You Made</p>
+                        <div className={styles.bigNumber}>{formatNumber(stats.totalTransactions)}</div>
+                        <p className={styles.slideSubtitle}>Transactions on Base</p>
                         <div className={styles.subStats}>
                             <span className={styles.successStat}>
                                 <span className={styles.icon}>{Icons.check}</span>
-                                {stats.successfulTransactions} successful
+                                {formatNumber(stats.successfulTransactions)} successful
                             </span>
                             {stats.failedTransactions > 0 && (
                                 <span className={styles.failStat}>
@@ -177,14 +194,14 @@ Get your Base Wrapped`;
 
                 {slideType === 'gas' && (
                     <div className={`${styles.slide} ${styles.gasSlide}`}>
-                        <p className={styles.slideLabel}>You spent</p>
+                        <p className={styles.slideLabel}>You Spent</p>
                         <div className={styles.bigNumber}>{stats.totalGasSpentEth}</div>
                         <p className={styles.slideSubtitle}>
                             <span className={styles.icon}>{Icons.gas}</span>
-                            ETH on gas
+                            ETH on Gas
                         </p>
                         <p className={styles.funFact}>
-                            That&apos;s about ${(parseFloat(stats.totalGasSpentEth) * 3500).toFixed(2)} USD
+                            That&apos;s about ${formatNumber(Math.round(parseFloat(stats.totalGasSpentEth) * 3500))} USD
                         </p>
                     </div>
                 )}
