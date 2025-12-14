@@ -9,9 +9,9 @@ interface WrappedStatsProps {
     isDemo?: boolean;
 }
 
-type SlideType = 'intro' | 'transactions' | 'gas' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'builder' | 'projects' | 'summary';
+type SlideType = 'intro' | 'transactions' | 'gas' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'builder' | 'projects' | 'accounts' | 'summary';
 
-const SLIDES: SlideType[] = ['intro', 'transactions', 'gas', 'dapps', 'nfts', 'tokens', 'time', 'builder', 'projects', 'summary'];
+const SLIDES: SlideType[] = ['intro', 'transactions', 'gas', 'dapps', 'nfts', 'tokens', 'time', 'builder', 'projects', 'accounts', 'summary'];
 
 // SVG Icons
 const Icons = {
@@ -340,47 +340,60 @@ Get your Base Wrapped`;
 
                 {slideType === 'projects' && (
                     <div className={`${styles.slide} ${styles.projectsSlide}`}>
-                        <p className={styles.slideLabel}>Your Projects & Connections</p>
+                        <p className={styles.slideLabel}>Your Projects</p>
                         {stats.projects && stats.projects.length > 0 ? (
                             <>
                                 <h3 className={styles.slideTitle}>Builder Portfolio</h3>
                                 <div className={styles.projectsList}>
-                                    {stats.projects.slice(0, 3).map((project, i) => (
+                                    {stats.projects.slice(0, 4).map((project, i) => (
                                         <div key={i} className={styles.projectCard}>
                                             <div className={styles.projectName}>{project.name}</div>
                                             <div className={styles.projectRole}>{project.role}</div>
                                             {project.description && (
-                                                <div className={styles.projectDesc}>{project.description.slice(0, 60)}...</div>
+                                                <div className={styles.projectDesc}>{project.description.slice(0, 80)}...</div>
                                             )}
                                         </div>
                                     ))}
                                 </div>
+                                <p className={styles.funFact}>
+                                    <span className={styles.icon}>{Icons.star}</span>
+                                    {stats.projects.length} project{stats.projects.length > 1 ? 's' : ''} on Talent Protocol
+                                </p>
                             </>
                         ) : (
                             <div className={styles.noScore}>
                                 <p>No projects found</p>
+                                <p className={styles.funFact}>Add projects at talent.protocol</p>
                             </div>
                         )}
-                        {stats.accounts && stats.accounts.length > 0 && (
-                            <div className={styles.accountsSection}>
-                                <p className={styles.accountsLabel}>Connected Accounts</p>
-                                <div className={styles.accountsList}>
-                                    {stats.accounts.map((acc, i) => (
-                                        <div key={i} className={styles.accountBadge}>
-                                            <span className={styles.icon}>
-                                                {acc.verified ? Icons.check : Icons.x}
-                                            </span>
-                                            <span>{acc.source}</span>
-                                        </div>
-                                    ))}
-                                </div>
+                    </div>
+                )}
+
+                {slideType === 'accounts' && (
+                    <div className={`${styles.slide} ${styles.accountsSlide}`}>
+                        <p className={styles.slideLabel}>Your Connections</p>
+                        <h3 className={styles.slideTitle}>Connected Accounts</h3>
+                        {stats.accounts && stats.accounts.length > 0 ? (
+                            <div className={styles.accountsList}>
+                                {stats.accounts.map((acc, i) => (
+                                    <div key={i} className={styles.accountBadge}>
+                                        <span className={styles.icon}>
+                                            {acc.verified ? Icons.check : Icons.x}
+                                        </span>
+                                        <span>{acc.source}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className={styles.noScore}>
+                                <p>No connected accounts</p>
                             </div>
                         )}
                         {stats.topCredentials && stats.topCredentials.length > 0 && (
                             <div className={styles.credentialsSection}>
                                 <p className={styles.accountsLabel}>Top Credentials</p>
                                 <div className={styles.credentialsList}>
-                                    {stats.topCredentials.slice(0, 3).map((cred, i) => (
+                                    {stats.topCredentials.slice(0, 4).map((cred, i) => (
                                         <div key={i} className={styles.credentialItem}>
                                             <span className={styles.icon}>{Icons.star}</span>
                                             <span>{cred.name}</span>

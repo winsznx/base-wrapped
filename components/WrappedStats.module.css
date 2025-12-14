@@ -530,6 +530,10 @@
   background: linear-gradient(180deg, #0052FF 0%, #003BB5 100%);
 }
 
+.accountsSlide {
+  background: linear-gradient(180deg, #003BB5 0%, #002266 100%);
+}
+
 .projectsList {
   display: flex;
   flex-direction: column;

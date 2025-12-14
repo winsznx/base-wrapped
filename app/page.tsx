@@ -237,13 +237,6 @@ export default function Home() {
               >
                 Enter Wallet Address
               </button>
-
-              <button
-                className={styles.secondaryButton}
-                onClick={handleDemo}
-              >
-                Try Demo
-              </button>
             </>
           )}
         </div>
