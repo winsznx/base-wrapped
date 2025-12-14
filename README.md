@@ -1,159 +1,105 @@
-# Waitlist Mini App Quickstart
+# Base Wrapped 🔵
 
-This is a demo Mini App application built using OnchainKit and the Farcaster SDK. Build a waitlist sign-up mini app for your company that can be published to the Base app and Farcaster. 
+Your 2025 Year on Base — A Spotify Wrapped-style experience for your onchain activity.
 
-> [!IMPORTANT]  
-> Before interacting with this demo, please review our [disclaimer](#disclaimer) — there are **no official tokens or apps** associated with Cubey, Base, or Coinbase.
+## Features
 
-## Prerequisites
+### Core Stats
+- **Transaction Summary** — Total transactions, success rate
+- **Gas Analytics** — ETH spent, USD equivalent
+- **dApp Rankings** — Your top 5 protocols
+- **NFT Activity** — Minted, collected, traded
+- **Token Insights** — Most traded tokens
+- **Time Analysis** — Peak days, early bird/night owl stats
 
-Before getting started, make sure you have:
+### Personality System
+10 onchain archetypes based on your activity:
+- DeFi Degen, NFT Collector, Bridge Nomad, Gas Wizard
+- Meme Lord, Early Adopter, Whale, Social Butterfly
+- Diamond Hands, Explorer
 
-* Base app account
-* A [Farcaster](https://farcaster.xyz/) account
-* [Vercel](https://vercel.com/) account for hosting the application
-* [Coinbase Developer Platform](https://portal.cdp.coinbase.com/) Client API Key
+### Milestone Badges
+- Century Club (100+ txs)
+- First Mint (NFT minted)
+- Whale Watch (10+ ETH volume)
+- Early Bird (Before June 2025)
+- Protocol Explorer (20+ protocols)
+- Power User (10+ busy days)
+
+### Storytelling Slides
+- **First Transaction** — "Where it all began..."
+- **Peak Day** — Your wildest activity day
+- **Personality Reveal** — Your onchain archetype
+- **Milestones** — Earned badges
+
+### Integrations
+- **Talent Protocol** — Builder Score + credentials
+- **Routescan API** — Transaction history
+- **Farcaster** — Share to Warpcast
+
+## Tech Stack
+- Next.js 15 + TypeScript
+- OnchainKit (MiniKit)
+- Farcaster Mini App
+- Space Grotesk typography
+- Base brand guidelines
 
 ## Getting Started
 
-### 1. Clone this repository 
-
+### 1. Clone and install
 ```bash
-git clone https://github.com/base/demos.git
-```
-
-### 2. Install dependencies:
-
-```bash
-cd demos/minikit/waitlist-mini-app-qs
+git clone https://github.com/winsznx/base-wrapped.git
+cd base-wrapped
 npm install
 ```
 
-### 3. Configure environment variables
-
-Create a `.env.local` file and add your environment variables:
-
+### 2. Environment variables
 ```bash
-NEXT_PUBLIC_PROJECT_NAME="Your App Name"
-NEXT_PUBLIC_ONCHAINKIT_API_KEY=<Replace-WITH-YOUR-CDP-API-KEY>
-NEXT_PUBLIC_URL=
+cp .env.example .env.local
 ```
 
-### 4. Run locally:
+Required:
+```
+NEXT_PUBLIC_ONCHAINKIT_API_KEY=your_cdp_key
+NEXT_PUBLIC_URL=http://localhost:3000
+TALENT_API_KEY=your_talent_protocol_key
+```
 
+### 3. Run locally
 ```bash
 npm run dev
 ```
 
-## Customization
-
-### Update Manifest Configuration
-
-The `minikit.config.ts` file configures your manifest located at `app/.well-known/farcaster.json`.
-
-**Skip the `accountAssociation` object for now.**
-
-To personalize your app, change the `name`, `subtitle`, and `description` fields and add images to your `/public` folder. Then update their URLs in the file.
-
-## Deployment
-
-### 1. Deploy to Vercel
-
+### 4. Deploy to Vercel
 ```bash
 vercel --prod
 ```
 
-You should have a URL deployed to a domain similar to: `https://your-vercel-project-name.vercel.app/`
-
-### 2. Update environment variables
-
-Add your production URL to your local `.env` file:
-
-```bash
-NEXT_PUBLIC_PROJECT_NAME="Your App Name"
-NEXT_PUBLIC_ONCHAINKIT_API_KEY=<Replace-WITH-YOUR-CDP-API-KEY>
-NEXT_PUBLIC_URL=https://your-vercel-project-name.vercel.app/
+## Project Structure
+```
+├── app/
+│   ├── page.tsx           # Landing + intro animation
+│   ├── about/             # About page
+│   └── api/wrapped/       # Stats API endpoint
+├── components/
+│   ├── WrappedStats.tsx   # 15 slide story
+│   └── IntroAnimation.tsx # 3D intro
+├── lib/
+│   ├── stats.ts           # Stats calculation
+│   ├── personality.ts     # Archetype system
+│   ├── basescan.ts        # Routescan API
+│   └── talentprotocol.ts  # Builder Score API
+└── public/
+    └── base-square.svg    # Official Base logo
 ```
 
-### 3. Upload environment variables to Vercel
+## Data Sources
+- **Routescan** — Transactions, gas, NFTs (free, no key needed)
+- **Talent Protocol** — Builder Score, socials, credentials
 
-Add environment variables to your production environment:
-
-```bash
-vercel env add NEXT_PUBLIC_PROJECT_NAME production
-vercel env add NEXT_PUBLIC_ONCHAINKIT_API_KEY production
-vercel env add NEXT_PUBLIC_URL production
-```
-
-## Account Association
-
-### 1. Sign Your Manifest
-
-1. Navigate to [Farcaster Manifest tool](https://farcaster.xyz/~/developers/mini-apps/manifest)
-2. Paste your domain in the form field (ex: your-vercel-project-name.vercel.app)
-3. Click the `Generate account association` button and follow the on-screen instructions for signing with your Farcaster wallet
-4. Copy the `accountAssociation` object
-
-### 2. Update Configuration
-
-Update your `minikit.config.ts` file to include the `accountAssociation` object:
-
-```ts
-export const minikitConfig = {
-    accountAssociation: {
-        "header": "your-header-here",
-        "payload": "your-payload-here",
-        "signature": "your-signature-here"
-    },
-    frame: {
-        // ... rest of your frame configuration
-    },
-}
-```
-
-### 3. Deploy Updates
-
-```bash
-vercel --prod
-```
-
-## Testing and Publishing
-
-### 1. Preview Your App
-
-Go to [base.dev/preview](https://base.dev/preview) to validate your app:
-
-1. Add your app URL to view the embeds and click the launch button to verify the app launches as expected
-2. Use the "Account association" tab to verify the association credentials were created correctly
-3. Use the "Metadata" tab to see the metadata added from the manifest and identify any missing fields
-
-### 2. Publish to Base App
-
-To publish your app, create a post in the Base app with your app's URL.
-
-## Learn More
-
-For detailed step-by-step instructions, see the [Create a Mini App tutorial](https://docs.base.org/docs/mini-apps/quickstart/create-new-miniapp/) in the Base documentation.
-
+## License
+MIT
 
 ---
 
-## Disclaimer  
-
-This project is a **demo application** created by the **Base / Coinbase Developer Relations team** for **educational and demonstration purposes only**.  
-
-**There is no token, cryptocurrency, or investment product associated with Cubey, Base, or Coinbase.**  
-
-Any social media pages, tokens, or applications claiming to be affiliated with, endorsed by, or officially connected to Cubey, Base, or Coinbase are **unauthorized and fraudulent**.  
-
-We do **not** endorse or support any third-party tokens, apps, or projects using the Cubey name or branding.  
-
-> [!WARNING]
-> Do **not** purchase, trade, or interact with any tokens or applications claiming affiliation with Coinbase, Base, or Cubey.  
-> Coinbase and Base will never issue a token or ask you to connect your wallet for this demo.  
-
-For official Base developer resources, please visit:  
-- [https://base.org](https://base.org)  
-- [https://docs.base.org](https://docs.base.org)  
-
----
+Built with 💙 on Base
