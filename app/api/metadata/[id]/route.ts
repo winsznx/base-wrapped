@@ -5,7 +5,9 @@ import { calculateWrappedStats } from '@/lib/stats';
 import { getBuilderData } from '@/lib/talentprotocol';
 import { getFarcasterData } from '@/lib/neynar';
 
-const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`;
+import { BASE_WRAPPED_CONTRACT } from '@/lib/contract';
+
+const CONTRACT_ADDRESS = BASE_WRAPPED_CONTRACT.address;
 
 // ABI for ownerOf
 const ABI = [

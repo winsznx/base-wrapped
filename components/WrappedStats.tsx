@@ -14,6 +14,7 @@ import {
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
 import { BaseWrappedABI } from '@/lib/abi/BaseWrapped';
+import { BASE_WRAPPED_CONTRACT } from '@/lib/contract';
 
 interface WrappedStatsProps {
     stats: WrappedStats;
@@ -220,16 +221,12 @@ Get your Base Wrapped`;
 
     const handleMint = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!process.env.NEXT_PUBLIC_CONTRACT_ADDRESS) {
-            alert("Contract not deployed yet!");
-            return;
-        }
 
         writeContract({
-            address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
+            address: BASE_WRAPPED_CONTRACT.address,
             abi: BaseWrappedABI,
             functionName: 'mint',
-            value: parseEther('0.0001'),
+            value: parseEther(BASE_WRAPPED_CONTRACT.mintPrice),
         });
     };
 
