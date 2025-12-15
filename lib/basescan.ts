@@ -239,3 +239,76 @@ export async function getBalance(address: string): Promise<string> {
         return '0';
     }
 }
+
+/**
+ * Check if address has deployed any contracts (builder detection)
+ * Looks for transactions where 'to' is empty/null (contract creation)
+ */
+export async function getContractCreations(address: string): Promise<{
+    count: number;
+    contracts: Array<{ address: string; hash: string; timestamp: string }>;
+}> {
+    const allTxs = await fetchFromRoutescan<Transaction>({
+        module: 'account',
+        action: 'txlist',
+        address,
+        startblock: '0',
+        endblock: '99999999',
+        page: '1',
+        offset: '10000',
+        sort: 'desc',
+    });
+
+    // Contract creation txs have empty 'to' field and non-empty contractAddress
+    const creations = allTxs.filter(tx =>
+        tx.from.toLowerCase() === address.toLowerCase() &&
+        (!tx.to || tx.to === '') &&
+        tx.contractAddress &&
+        tx.contractAddress !== ''
+    );
+
+    return {
+        count: creations.length,
+        contracts: creations.map(tx => ({
+            address: tx.contractAddress,
+            hash: tx.hash,
+            timestamp: tx.timeStamp,
+        })),
+    };
+}
+
+/**
+ * Get first ever transaction date for the address on Base
+ */
+export async function getFirstTransactionDate(address: string): Promise<{
+    date: string;
+    timestamp: number;
+    hash: string;
+} | null> {
+    const txs = await fetchFromRoutescan<Transaction>({
+        module: 'account',
+        action: 'txlist',
+        address,
+        startblock: '0',
+        endblock: '99999999',
+        page: '1',
+        offset: '10000',
+        sort: 'asc', // Oldest first
+    });
+
+    if (txs.length === 0) return null;
+
+    const firstTx = txs[0];
+    const timestamp = parseInt(firstTx.timeStamp);
+    const date = new Date(timestamp * 1000);
+
+    return {
+        date: date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }),
+        timestamp,
+        hash: firstTx.hash,
+    };
+}
