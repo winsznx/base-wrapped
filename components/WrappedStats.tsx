@@ -1,95 +1,72 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { type WrappedStats } from '@/lib/stats';
 import styles from './WrappedStats.module.css';
+import { CountUp } from './ui/CountUp';
+import { Confetti } from './ui/Confetti';
+import { ProgressRing } from './ui/ProgressRing';
+import {
+    Hammer, TrendingUp, Image as ImageIcon, MoveHorizontal, Zap, Laugh, Sunrise,
+    Anchor, MessageSquare, Gem, Compass, Trophy, Crown, Award, Paintbrush,
+    Fuel, Check, X, Share2, Github, Twitter, Link as LinkIcon
+} from 'lucide-react';
 
 interface WrappedStatsProps {
     stats: WrappedStats;
 }
 
-type SlideType = 'intro' | 'baseAppJoined' | 'firstTx' | 'transactions' | 'gas' | 'peakDay' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'personality' | 'milestones' | 'builder' | 'projects' | 'accounts' | 'summary';
+type SlideType = 'intro' | 'origin' | 'baseAppJoined' | 'firstTx' | 'transactions' | 'percentile' | 'streaks' | 'gas' | 'peakDay' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'personality' | 'builderReveal' | 'milestones' | 'builder' | 'projects' | 'accounts' | 'farcaster' | 'summary';
 
-const SLIDES: SlideType[] = ['intro', 'baseAppJoined', 'firstTx', 'transactions', 'gas', 'peakDay', 'dapps', 'nfts', 'tokens', 'time', 'personality', 'milestones', 'builder', 'projects', 'accounts', 'summary'];
+const ALL_SLIDES: SlideType[] = [
+    'intro',
+    'origin',          // NEW: "You've been on Base since..."
+    'baseAppJoined',
+    'firstTx',
+    'transactions',
+    'percentile',      // NEW: "Top X% of Base users"
+    'streaks',         // NEW: Longest streak, active days
+    'gas',
+    'peakDay',
+    'dapps',
+    'nfts',
+    'tokens',
+    'time',
+    'personality',
+    'builderReveal',   // NEW: "YOU SHIPPED" - contract deployment reveal
+    'milestones',
+    'builder',
+    'projects',
+    'accounts',
+    'farcaster',
+    'summary'
+];
 
-// SVG Icons
+// Helper to render Lucide icons by name
+const IconMap: Record<string, React.ElementType> = {
+    Hammer, TrendingUp, Image: ImageIcon, MoveHorizontal, Zap, Laugh, Sunrise,
+    Anchor, MessagesSquare: MessageSquare, Gem, Compass, Trophy, Crown, Award, Paintbrush
+};
+
+const LucideIcon = ({ name, size = 24, className }: { name: string, size?: number, className?: string }) => {
+    const Icon = IconMap[name] || Zap;
+    return <Icon size={size} className={className} />;
+};
+
+// SVG Icons (Legacy / Specific UI)
 const Icons = {
-    gas: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18H4z" />
-            <path d="M18 14h1a2 2 0 0 1 2 2v3a2 2 0 0 0 4 0v-5a2 2 0 0 0-2-2h-3" />
-            <path d="M4 12h12" />
-            <path d="M8 6h4" />
-        </svg>
-    ),
-    check: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-        </svg>
-    ),
-    x: (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-    ),
-    sunrise: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2v8" />
-            <path d="m4.93 10.93 1.41 1.41" />
-            <path d="M2 18h2" />
-            <path d="M20 18h2" />
-            <path d="m19.07 10.93-1.41 1.41" />
-            <path d="M22 22H2" />
-            <path d="m8 6 4-4 4 4" />
-            <path d="M16 18a4 4 0 0 0-8 0" />
-        </svg>
-    ),
-    moon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-        </svg>
-    ),
-    flame: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-        </svg>
-    ),
-    share: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="18" cy="5" r="3" />
-            <circle cx="6" cy="12" r="3" />
-            <circle cx="18" cy="19" r="3" />
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-        </svg>
-    ),
-    github: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-        </svg>
-    ),
-    twitter: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-        </svg>
-    ),
-    onchain: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-        </svg>
-    ),
-    farcaster: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm3 3h8v2H8V8zm0 4h8v2H8v-2z" />
-        </svg>
-    ),
-    star: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-    ),
+    gas: <Fuel size={24} />,
+    check: <Check size={16} />,
+    x: <X size={16} />,
+    sunrise: <Sunrise size={18} />,
+    moon: <span style={{ fontSize: 18 }}>🌙</span>, // Lucide Moon is filled usually
+    flame: <span style={{ fontSize: 18 }}>🔥</span>,
+    share: <Share2 size={20} />,
+    github: <Github size={18} />,
+    twitter: <Twitter size={18} />,
+    onchain: <LinkIcon size={18} />,
+    farcaster: <MessageSquare size={18} />,
+    star: <span style={{ fontSize: 18 }}>⭐</span>,
 };
 
 // Format numbers Base style: 100K, 1M, 1B
@@ -110,6 +87,40 @@ function formatNumber(num: number): string {
 }
 
 export function WrappedStats({ stats }: WrappedStatsProps) {
+    // Filter slides based on available data - skip slides that would be empty
+    const SLIDES = useMemo(() => {
+        return ALL_SLIDES.filter((slide) => {
+            switch (slide) {
+                case 'origin':
+                    return !!stats.originStory;
+                case 'baseAppJoined':
+                    return !!stats.baseAppJoinDate;
+                case 'firstTx':
+                    return !!stats.firstTransaction;
+                case 'percentile':
+                    return !!stats.percentile;
+                case 'streaks':
+                    return !!stats.streaks && stats.streaks.longestStreak > 1;
+                case 'peakDay':
+                    return !!stats.peakDay;
+                case 'personality':
+                    return !!stats.personality;
+                case 'builderReveal':
+                    return !!stats.builder && stats.builder.isBuilder;
+                case 'milestones':
+                    return stats.milestones && stats.milestones.some(m => m.achieved);
+                case 'projects':
+                    return stats.projects && stats.projects.length > 0;
+                case 'accounts':
+                    return (stats.accounts && stats.accounts.length > 0) || (stats.topCredentials && stats.topCredentials.length > 0);
+                case 'farcaster':
+                    return !!stats.farcaster;
+                default:
+                    return true;
+            }
+        });
+    }, [stats]);
+
     const [currentSlide, setCurrentSlide] = useState(0);
 
     const nextSlide = () => {
@@ -127,18 +138,45 @@ export function WrappedStats({ stats }: WrappedStatsProps) {
     const handleShare = (e: React.MouseEvent) => {
         e.stopPropagation();
 
-        // Build share text with stats
-        const shareText = `My 2025 on Base:
+        // Construct dynamic URL params
+        const params = new URLSearchParams();
+        const name = stats.socials?.farcaster?.username || stats.talentProfile?.displayName || 'Base User';
+        params.set('nm', name);
 
-${stats.totalTransactions} transactions
-${stats.totalGasSpentEth} ETH in gas
-${stats.nftsMinted} NFTs minted
-${stats.uniqueContractsInteracted} dApps used
-${stats.builderScore ? `Builder Score: ${stats.builderScore}` : ''}
+        if (stats.personality) {
+            params.set('p', stats.personality.title);
+            params.set('color', stats.personality.color);
+        }
+
+        params.set('tx', stats.totalTransactions.toString());
+
+        if (stats.percentile) {
+            params.set('pct', (100 - stats.percentile.overall).toFixed(1));
+        }
+
+        if (stats.builder && stats.builder.isBuilder) {
+            params.set('builder', 'true');
+        }
+
+        const appUrl = `https://base-wrapped-nine.vercel.app?${params.toString()}`;
+
+        const emojiMap: Record<string, string> = {
+            'Hammer': '🔨', 'TrendingUp': '📈', 'Image': '🖼️', 'MoveHorizontal': '🌉',
+            'Zap': '⚡', 'Laugh': '🐸', 'Sunrise': '🌅', 'Anchor': '🐋',
+            'MessagesSquare': '🦋', 'Gem': '💎', 'Compass': '🧭', 'Trophy': '🏆',
+            'Crown': '👑', 'Award': '💯', 'Paintbrush': '🎨'
+        };
+        const pEmoji = stats.personality ? (emojiMap[stats.personality.emoji] || '✨') : '';
+
+        const shareText = `My 2025 on Base:
+${stats.personality ? `I'm a ${stats.personality.title} ${pEmoji}` : ''}
+
+${stats.totalTransactions} Transactions
+Top ${stats.percentile ? (100 - stats.percentile.overall).toFixed(1) : '?'}% of users
+${stats.builder?.isBuilder ? 'Verified Builder 🔨' : ''}
 
 Get your Base Wrapped`;
 
-        const appUrl = 'https://base-wrapped-nine.vercel.app';
         const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(appUrl)}`;
 
         window.open(warpcastUrl, '_blank');
@@ -162,6 +200,29 @@ Get your Base Wrapped`;
                         <h1 className={styles.heroTitle}>Your 2025</h1>
                         <h2 className={styles.heroSubtitle}>on Base</h2>
                         <p className={styles.tapHint}>Tap to continue</p>
+                    </div>
+                )}
+
+                {/* NEW: Origin Story Slide */}
+                {slideType === 'origin' && stats.originStory && (
+                    <div className={`${styles.slide} ${styles.originSlide}`}>
+                        {stats.originStory.joinedBefore2024 && <Confetti />}
+                        <p className={styles.slideLabel}>Your Origin Story</p>
+                        <h2 className={styles.slideTitle}>You&apos;ve been on Base since</h2>
+                        <div className={styles.bigDate}>{stats.originStory.firstEverTxDate}</div>
+                        <div className={styles.statsRow}>
+                            <div className={styles.statBox}>
+                                <span className={styles.statNumber}>
+                                    <CountUp end={stats.originStory.daysOnBase} duration={2000} />
+                                </span>
+                                <span className={styles.statLabel}>days on Base</span>
+                            </div>
+                        </div>
+                        {stats.originStory.joinedBefore2024 && (
+                            <p className={styles.ogBadge}>
+                                🏛️ OG Status — Here before 2024
+                            </p>
+                        )}
                     </div>
                 )}
 
@@ -206,20 +267,82 @@ Get your Base Wrapped`;
                 {slideType === 'transactions' && (
                     <div className={`${styles.slide} ${styles.txSlide}`}>
                         <p className={styles.slideLabel}>This Year You Made</p>
-                        <div className={styles.bigNumber}>{formatNumber(stats.totalTransactions)}</div>
+                        <div className={styles.bigNumber}>
+                            <CountUp end={stats.totalTransactions} duration={2000} />
+                        </div>
                         <p className={styles.slideSubtitle}>Transactions on Base</p>
                         <div className={styles.subStats}>
                             <span className={styles.successStat}>
                                 <span className={styles.icon}>{Icons.check}</span>
-                                {formatNumber(stats.successfulTransactions)} successful
+                                <CountUp end={stats.successfulTransactions} duration={1500} /> successful
                             </span>
                             {stats.failedTransactions > 0 && (
                                 <span className={styles.failStat}>
                                     <span className={styles.icon}>{Icons.x}</span>
-                                    {stats.failedTransactions} failed
+                                    <CountUp end={stats.failedTransactions} duration={1500} /> failed
                                 </span>
                             )}
                         </div>
+                    </div>
+                )}
+
+                {slideType === 'percentile' && stats.percentile && (
+                    <div className={`${styles.slide} ${styles.percentileSlide}`}>
+                        <p className={styles.slideLabel}>You&apos;re in the</p>
+                        <div className={styles.percentileNumber}>
+                            Top <CountUp end={100 - stats.percentile.overall} decimals={1} suffix="%" duration={2500} />
+                        </div>
+                        <p className={styles.slideSubtitle}>of Base Users</p>
+                        <div className={styles.percentileBreakdown}>
+                            <div className={styles.percentileItem}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <ProgressRing radius={20} stroke={3} progress={100 - stats.percentile.transactions} color="#FFD700" />
+                                    <span>Transactions</span>
+                                </div>
+                                <span className={styles.percentileValue}>Top {100 - stats.percentile.transactions}%</span>
+                            </div>
+                            <div className={styles.percentileItem}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <ProgressRing radius={20} stroke={3} progress={100 - stats.percentile.gasSpent} color="#FF6B35" />
+                                    <span>Gas Spent</span>
+                                </div>
+                                <span className={styles.percentileValue}>Top {100 - stats.percentile.gasSpent}%</span>
+                            </div>
+                            {/* Removed contracts breakdown if not needed, or add specialized logic later */}
+                        </div>
+                    </div>
+                )}
+
+                {/* NEW: Streaks Slide */}
+                {slideType === 'streaks' && stats.streaks && (
+                    <div className={`${styles.slide} ${styles.streaksSlide}`}>
+                        <p className={styles.slideLabel}>Your Activity Streaks</p>
+                        <div className={styles.streaksBig}>
+                            <span className={styles.streakNumber}>
+                                <CountUp end={stats.streaks.longestStreak} duration={2500} />
+                            </span>
+                            <span className={styles.streakLabel}>day streak</span>
+                        </div>
+                        <p className={styles.slideSubtitle}>Your longest consecutive run</p>
+                        <div className={styles.statsRow}>
+                            <div className={styles.statBox}>
+                                <span className={styles.statNumber}>
+                                    <CountUp end={stats.streaks.activeDays} duration={2000} />
+                                </span>
+                                <span className={styles.statLabel}>active days total</span>
+                            </div>
+                            <div className={styles.statBox}>
+                                <span className={styles.statNumber}>
+                                    <CountUp end={stats.streaks.activeDaysThisYear} duration={2000} />
+                                </span>
+                                <span className={styles.statLabel}>days in 2025</span>
+                            </div>
+                        </div>
+                        {stats.streaks.currentStreak > 0 && (
+                            <p className={styles.currentStreak}>
+                                🔥 Current streak: <CountUp end={stats.streaks.currentStreak} duration={1500} /> days
+                            </p>
+                        )}
                     </div>
                 )}
 
@@ -338,9 +461,39 @@ Get your Base Wrapped`;
                 {slideType === 'personality' && stats.personality && (
                     <div className={`${styles.slide} ${styles.personalitySlide}`} style={{ '--personality-color': stats.personality.color } as React.CSSProperties}>
                         <p className={styles.slideLabel}>Your Onchain Personality</p>
-                        <div className={styles.personalityEmoji}>{stats.personality.emoji}</div>
+                        <div className={styles.personalityEmoji}>
+                            <LucideIcon name={stats.personality.emoji} size={80} />
+                        </div>
                         <h2 className={styles.personalityTitle}>{stats.personality.title}</h2>
                         <p className={styles.personalityDesc}>{stats.personality.description}</p>
+                    </div>
+                )}
+
+                {/* NEW: Builder Reveal Slide - "YOU SHIPPED" */}
+                {slideType === 'builderReveal' && stats.builder && stats.builder.isBuilder && (
+                    <div className={`${styles.slide} ${styles.builderRevealSlide}`}>
+                        <Confetti />
+                        <p className={styles.slideLabel}>Legendary Status</p>
+                        <div className={styles.shippedEmoji}>
+                            <LucideIcon name="Hammer" size={80} />
+                        </div>
+                        <h2 className={styles.shippedTitle}>YOU SHIPPED</h2>
+                        <p className={styles.slideSubtitle}>
+                            <CountUp end={stats.builder.contractsDeployed} duration={3000} /> contract{stats.builder.contractsDeployed > 1 ? 's' : ''} deployed on Base
+                        </p>
+                        <div className={styles.deployedList}>
+                            {stats.builder.deployedContracts.slice(0, 3).map((contract, idx) => (
+                                <div key={idx} className={styles.deployedContract}>
+                                    <span className={styles.contractAddress}>
+                                        {contract.address.slice(0, 6)}...{contract.address.slice(-4)}
+                                    </span>
+                                    <span className={styles.contractDate}>{contract.date}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <p className={styles.builderNote}>
+                            You&apos;re not just a user. You&apos;re a builder. 🚀
+                        </p>
                     </div>
                 )}
 
@@ -351,7 +504,9 @@ Get your Base Wrapped`;
                         <div className={styles.badgesList}>
                             {stats.milestones.filter(m => m.achieved).map((milestone) => (
                                 <div key={milestone.id} className={styles.badge}>
-                                    <span className={styles.badgeEmoji}>{milestone.emoji}</span>
+                                    <span className={styles.badgeEmoji}>
+                                        <LucideIcon name={milestone.emoji} size={28} />
+                                    </span>
                                     <div className={styles.badgeInfo}>
                                         <span className={styles.badgeTitle}>{milestone.title}</span>
                                         <span className={styles.badgeDesc}>{milestone.description}</span>
@@ -488,6 +643,57 @@ Get your Base Wrapped`;
                                             <span className={styles.icon}>{Icons.star}</span>
                                             <span>{cred.name}</span>
                                             <span className={styles.credPoints}>{cred.points} pts</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {slideType === 'farcaster' && stats.farcaster && (
+                    <div className={`${styles.slide} ${styles.farcasterSlide}`}>
+                        <p className={styles.slideLabel}>Your Farcaster Presence</p>
+                        {stats.farcaster.pfpUrl && (
+                            <img
+                                src={stats.farcaster.pfpUrl}
+                                alt="Profile"
+                                className={styles.farcasterPfp}
+                            />
+                        )}
+                        <h2 className={styles.farcasterUsername}>@{stats.farcaster.username}</h2>
+                        {stats.farcaster.displayName && stats.farcaster.displayName !== stats.farcaster.username && (
+                            <p className={styles.farcasterDisplayName}>{stats.farcaster.displayName}</p>
+                        )}
+                        <div className={styles.farcasterStats}>
+                            <div className={styles.farcasterStat}>
+                                <span className={styles.farcasterStatValue}>{formatNumber(stats.farcaster.followerCount)}</span>
+                                <span className={styles.farcasterStatLabel}>Followers</span>
+                            </div>
+                            <div className={styles.farcasterStat}>
+                                <span className={styles.farcasterStatValue}>{formatNumber(stats.farcaster.followingCount)}</span>
+                                <span className={styles.farcasterStatLabel}>Following</span>
+                            </div>
+                            {stats.farcaster.totalCasts2025 !== undefined && (
+                                <div className={styles.farcasterStat}>
+                                    <span className={styles.farcasterStatValue}>{stats.farcaster.totalCasts2025}</span>
+                                    <span className={styles.farcasterStatLabel}>Casts</span>
+                                </div>
+                            )}
+                        </div>
+                        {stats.farcaster.hasPowerBadge && (
+                            <p className={styles.funFact}>
+                                <span className={styles.icon}>{Icons.star}</span>
+                                Power Badge Holder
+                            </p>
+                        )}
+                        {stats.farcaster.topChannels && stats.farcaster.topChannels.length > 0 && (
+                            <div className={styles.farcasterChannels}>
+                                <p className={styles.accountsLabel}>Top Channels</p>
+                                <div className={styles.accountsList}>
+                                    {stats.farcaster.topChannels.slice(0, 4).map((channel) => (
+                                        <div key={channel} className={styles.accountBadge}>
+                                            /{channel}
                                         </div>
                                     ))}
                                 </div>

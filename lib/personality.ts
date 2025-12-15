@@ -5,6 +5,7 @@
 
 // Personality Types
 export type PersonalityType =
+    | 'builder'
     | 'defi_degen'
     | 'nft_collector'
     | 'bridge_nomad'
@@ -14,7 +15,9 @@ export type PersonalityType =
     | 'whale'
     | 'social_butterfly'
     | 'diamond_hands'
-    | 'explorer';
+    | 'explorer'
+    | 'power_user'
+    | 'og';
 
 export interface Personality {
     type: PersonalityType;
@@ -26,65 +29,83 @@ export interface Personality {
 
 // Personality definitions
 export const PERSONALITIES: Record<PersonalityType, Omit<Personality, 'type'>> = {
+    builder: {
+        title: 'The Builder',
+        description: 'You shipped on Base. Contract deployer, protocol creator. Legendary.',
+        emoji: 'Hammer',
+        color: '#FF6B35',
+    },
     defi_degen: {
         title: 'DeFi Degen',
         description: 'You live for the swap. DEXes are your second home.',
-        emoji: '📈',
+        emoji: 'TrendingUp',
         color: '#00D395',
     },
     nft_collector: {
         title: 'NFT Collector',
         description: 'Your wallet is a gallery. You collect art like breathing.',
-        emoji: '🖼️',
+        emoji: 'Image',
         color: '#FF6B6B',
     },
     bridge_nomad: {
         title: 'Bridge Nomad',
         description: 'Chains can\'t hold you. You roam freely across networks.',
-        emoji: '🌉',
+        emoji: 'MoveHorizontal',
         color: '#9B59B6',
     },
     gas_wizard: {
         title: 'Gas Wizard',
         description: 'You time your txs perfectly. Efficiency is your superpower.',
-        emoji: '⚡',
+        emoji: 'Zap',
         color: '#F39C12',
     },
     meme_lord: {
         title: 'Meme Lord',
         description: 'DEGEN, BRETT, TOSHI — you ride every wave.',
-        emoji: '🐸',
+        emoji: 'Laugh',
         color: '#2ECC71',
     },
     early_adopter: {
         title: 'Early Adopter',
         description: 'You were here before it was cool. OG status earned.',
-        emoji: '🌅',
+        emoji: 'Sunrise',
         color: '#3498DB',
     },
     whale: {
         title: 'Whale Watcher',
         description: 'Big moves, big volume. The chain notices when you swim.',
-        emoji: '🐋',
+        emoji: 'Anchor',
         color: '#1ABC9C',
     },
     social_butterfly: {
         title: 'Social Butterfly',
         description: 'Farcaster, friend.tech — you connect communities.',
-        emoji: '🦋',
+        emoji: 'MessagesSquare',
         color: '#E91E63',
     },
     diamond_hands: {
         title: 'Diamond Hands',
         description: 'Few tokens, many holds. You don\'t panic sell.',
-        emoji: '💎',
+        emoji: 'Gem',
         color: '#00BCD4',
     },
     explorer: {
         title: 'Base Explorer',
         description: 'You try everything. Curious mind, diverse portfolio.',
-        emoji: '🧭',
-        color: '#0000FF',
+        emoji: 'Compass',
+        color: '#0052FF',
+    },
+    power_user: {
+        title: 'Power User',
+        description: '1000+ transactions. You live onchain. Base is home.',
+        emoji: 'Trophy',
+        color: '#FFD700',
+    },
+    og: {
+        title: 'OG',
+        description: 'You were on Base before 2024. Ancient wisdom, early vibes.',
+        emoji: 'Crown',
+        color: '#4169E1',
     },
 };
 
@@ -124,6 +145,7 @@ interface PersonalityInput {
     topTokens: Array<{ name: string; symbol: string; count: number }>;
     uniqueContractsInteracted: number;
     totalValueSentEth: string;
+    contractsDeployed?: number; // Builder detection
 }
 
 export function determinePersonality(input: PersonalityInput): Personality {
@@ -137,10 +159,12 @@ export function determinePersonality(input: PersonalityInput): Personality {
         topTokens,
         uniqueContractsInteracted,
         totalValueSentEth,
+        contractsDeployed = 0,
     } = input;
 
     // Calculate scores for each personality
     const scores: Record<PersonalityType, number> = {
+        builder: 0,
         defi_degen: 0,
         nft_collector: 0,
         bridge_nomad: 0,
@@ -151,7 +175,14 @@ export function determinePersonality(input: PersonalityInput): Personality {
         social_butterfly: 0,
         diamond_hands: 0,
         explorer: 0,
+        power_user: 0,
+        og: 0,
     };
+
+    // BUILDER - Deployed contracts (HIGHEST PRIORITY - they SHIPPED)
+    if (contractsDeployed >= 1) scores.builder += 100; // Any deployment = builder
+    if (contractsDeployed >= 3) scores.builder += 50; // Multiple deployments = extra credit
+    if (contractsDeployed >= 10) scores.builder += 50; // Prolific builder
 
     // DeFi Degen - High DEX activity
     const defiTxs = topDapps.filter(d =>
@@ -172,27 +203,31 @@ export function determinePersonality(input: PersonalityInput): Personality {
     if (bridgeTxs >= 5) scores.bridge_nomad += 50;
     if (bridgeTxs >= 10) scores.bridge_nomad += 30;
 
-    // Gas Wizard - Low avg gas
+    // Gas Wizard - Low avg gas (Must have active history)
     const avgGas = parseFloat(avgGasPerTx);
-    if (avgGas < 0.0005) scores.gas_wizard += 50;
-    if (avgGas < 0.001) scores.gas_wizard += 20;
+    if (avgGas < 0.0005 && totalTransactions > 10) scores.gas_wizard += 40; // Reduced from 50
+    if (avgGas < 0.0001 && totalTransactions > 20) scores.gas_wizard += 30;
 
     // Meme Lord - Trades meme tokens
     const memeTokenCount = topTokens.filter(t =>
         MEME_TOKENS.some(m => t.symbol.toLowerCase().includes(m) || t.name.toLowerCase().includes(m))
     ).length;
-    if (memeTokenCount >= 3) scores.meme_lord += 50;
-    if (memeTokenCount >= 1) scores.meme_lord += 20;
+    if (memeTokenCount >= 3) scores.meme_lord += 60; // Boosted
+    if (memeTokenCount >= 1) scores.meme_lord += 30;
 
     // Early Adopter - Active before mid-2025
     const firstTx = new Date(firstTxDate);
     const cutoffDate = new Date('2025-06-01');
-    if (firstTx < cutoffDate) scores.early_adopter += 50;
-    if (firstTx < new Date('2025-03-01')) scores.early_adopter += 30;
+    if (firstTx < cutoffDate) scores.early_adopter += 40;
+    if (firstTx < new Date('2025-03-01')) scores.early_adopter += 20;
+
+    // OG - Active before 2024 (HUGE)
+    if (firstTx < new Date('2024-01-01')) scores.og += 150; // Guaranteed win if OG
+    if (firstTx < new Date('2023-09-01')) scores.og += 50;
 
     // Whale - High volume
     const volumeEth = parseFloat(totalValueSentEth);
-    if (volumeEth > 10) scores.whale += 50;
+    if (volumeEth > 10) scores.whale += 60;
     if (volumeEth > 1) scores.whale += 20;
 
     // Social Butterfly - Social dApps
@@ -201,16 +236,23 @@ export function determinePersonality(input: PersonalityInput): Personality {
         d.name.toLowerCase().includes('friend') ||
         d.name.toLowerCase().includes('farcaster')
     ).reduce((sum, d) => sum + d.count, 0);
-    if (socialTxs >= 10) scores.social_butterfly += 50;
+    if (socialTxs >= 10) scores.social_butterfly += 60;
+    if (socialTxs >= 5) scores.social_butterfly += 30;
 
     // Diamond Hands - Few unique tokens, many txs
     if (topTokens.length <= 5 && totalTransactions > 50) {
-        scores.diamond_hands += 40;
+        scores.diamond_hands += 50;
     }
 
-    // Explorer - High contract diversity
-    if (uniqueContractsInteracted > 20) scores.explorer += 40;
+    // Explorer - High contract diversity (Easier to get)
+    if (uniqueContractsInteracted > 10) scores.explorer += 40;
+    if (uniqueContractsInteracted > 30) scores.explorer += 40;
     if (uniqueContractsInteracted > 50) scores.explorer += 30;
+
+    // Power User - High transaction count
+    if (totalTransactions >= 1000) scores.power_user += 100;
+    if (totalTransactions >= 500) scores.power_user += 50;
+    if (totalTransactions >= 100) scores.power_user += 30;
 
     // Find highest scoring personality
     let maxScore = 0;
@@ -253,7 +295,7 @@ export function calculateMilestones(input: {
         id: 'century_club',
         title: 'Century Club',
         description: '100 transactions on Base',
-        emoji: '💯',
+        emoji: 'Award',
         achieved: input.totalTransactions >= 100,
     });
 
@@ -262,7 +304,7 @@ export function calculateMilestones(input: {
         id: 'first_mint',
         title: 'First Mint',
         description: 'Minted your first NFT',
-        emoji: '🎨',
+        emoji: 'Paintbrush',
         achieved: input.nftsMinted >= 1,
     });
 
@@ -272,7 +314,7 @@ export function calculateMilestones(input: {
         id: 'whale_watch',
         title: 'Whale Watch',
         description: 'Moved 10+ ETH on Base',
-        emoji: '🐋',
+        emoji: 'Anchor',
         achieved: volume >= 10,
     });
 
@@ -282,7 +324,7 @@ export function calculateMilestones(input: {
         id: 'early_bird',
         title: 'Early Bird',
         description: 'Started before June 2025',
-        emoji: '🌅',
+        emoji: 'Sunrise',
         achieved: firstTx < new Date('2025-06-01'),
     });
 
@@ -291,7 +333,7 @@ export function calculateMilestones(input: {
         id: 'protocol_explorer',
         title: 'Protocol Explorer',
         description: 'Interacted with 20+ protocols',
-        emoji: '🧭',
+        emoji: 'Compass',
         achieved: input.uniqueContractsInteracted >= 20,
     });
 
@@ -300,7 +342,7 @@ export function calculateMilestones(input: {
         id: 'power_user',
         title: 'Power User',
         description: '10+ days with 5+ transactions',
-        emoji: '⚡',
+        emoji: 'Zap',
         achieved: input.busyDaysCount >= 10,
     });
 
