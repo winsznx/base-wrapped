@@ -524,8 +524,41 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
+
 .shareButton:active {
   transform: scale(0.98);
+}
+
+.mintButton {
+  padding: 16px 40px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 32px rgba(255, 215, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.mintButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 40px rgba(255, 215, 0, 0.5);
+}
+
+.mintButton:active {
+  transform: scale(0.98);
+}
+
+.mintButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(1);
 }
 
 /* Progress Dots */
@@ -1145,4 +1178,57 @@
   .shippedTitle {
     font-size: 36px;
   }
+}
+
+/* Money Moves Slide */
+.moneyMovesSlide {
+  background: linear-gradient(135deg, #00C853 0%, #B2FF59 100%);
+  color: #052e16 !important;
+  /* Dark green text for contrast */
+}
+
+.moneyMovesSlide .slideLabel {
+  color: rgba(5, 46, 22, 0.7);
+}
+
+.moneyMovesSlide .bigNumber {
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #052e16 0%, #14532d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.moneyMovesSlide .slideSubtitle {
+  color: rgba(5, 46, 22, 0.8);
+}
+
+.greenTheme .funFact {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #052e16;
+}
+
+.volumeBox {
+  background: rgba(255, 255, 255, 0.3);
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  margin-top: 2rem;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.volumeLabel {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+  color: #052e16;
+}
+
+.volumeValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #052e16;
 }

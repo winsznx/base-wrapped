@@ -9,14 +9,17 @@ import { ProgressRing } from './ui/ProgressRing';
 import {
     Hammer, TrendingUp, Image as ImageIcon, MoveHorizontal, Zap, Laugh, Sunrise,
     Anchor, MessageSquare, Gem, Compass, Trophy, Crown, Award, Paintbrush,
-    Fuel, Check, X, Share2, Github, Twitter, Link as LinkIcon
+    Fuel, Check, X, Share2, Github, Twitter, Link as LinkIcon, Diamond
 } from 'lucide-react';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { parseEther } from 'viem';
+import { BaseWrappedABI } from '@/lib/abi/BaseWrapped';
 
 interface WrappedStatsProps {
     stats: WrappedStats;
 }
 
-type SlideType = 'intro' | 'origin' | 'baseAppJoined' | 'firstTx' | 'transactions' | 'percentile' | 'streaks' | 'gas' | 'peakDay' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'personality' | 'builderReveal' | 'milestones' | 'builder' | 'projects' | 'accounts' | 'farcaster' | 'summary';
+type SlideType = 'intro' | 'origin' | 'baseAppJoined' | 'firstTx' | 'transactions' | 'moneyMoves' | 'percentile' | 'streaks' | 'gas' | 'peakDay' | 'dapps' | 'nfts' | 'tokens' | 'time' | 'personality' | 'builderReveal' | 'milestones' | 'builder' | 'projects' | 'accounts' | 'farcaster' | 'summary';
 
 const ALL_SLIDES: SlideType[] = [
     'intro',
@@ -24,6 +27,7 @@ const ALL_SLIDES: SlideType[] = [
     'baseAppJoined',
     'firstTx',
     'transactions',
+    'moneyMoves',      // NEW: Highest swap & volume
     'percentile',      // NEW: "Top X% of Base users"
     'streaks',         // NEW: Longest streak, active days
     'gas',
@@ -45,7 +49,7 @@ const ALL_SLIDES: SlideType[] = [
 // Helper to render Lucide icons by name
 const IconMap: Record<string, React.ElementType> = {
     Hammer, TrendingUp, Image: ImageIcon, MoveHorizontal, Zap, Laugh, Sunrise,
-    Anchor, MessagesSquare: MessageSquare, Gem, Compass, Trophy, Crown, Award, Paintbrush
+    Anchor, MessagesSquare: MessageSquare, Gem, Compass, Trophy, Crown, Award, Paintbrush, Diamond
 };
 
 const LucideIcon = ({ name, size = 24, className }: { name: string, size?: number, className?: string }) => {
@@ -97,6 +101,8 @@ export function WrappedStats({ stats }: WrappedStatsProps) {
                     return !!stats.baseAppJoinDate;
                 case 'firstTx':
                     return !!stats.firstTransaction;
+                case 'moneyMoves':
+                    return !!stats.volume && (!!stats.volume.highestValueSwap || parseFloat(stats.volume.largestSingleTx.value) > 0);
                 case 'percentile':
                     return !!stats.percentile;
                 case 'streaks':
@@ -204,6 +210,27 @@ Get your Base Wrapped`;
         } catch (err) {
             console.error('Failed to download image:', err);
         }
+    };
+
+    // Mint Logic
+    const { writeContract, data: hash, isPending: isMintPending } = useWriteContract();
+    const { isLoading: isConfirming, isSuccess: isMintSuccess } = useWaitForTransactionReceipt({
+        hash,
+    });
+
+    const handleMint = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!process.env.NEXT_PUBLIC_CONTRACT_ADDRESS) {
+            alert("Contract not deployed yet!");
+            return;
+        }
+
+        writeContract({
+            address: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`,
+            abi: BaseWrappedABI,
+            functionName: 'mint',
+            value: parseEther('0.0001'),
+        });
     };
 
     const slideType = SLIDES[currentSlide];
@@ -322,6 +349,48 @@ Get your Base Wrapped`;
                                 </span>
                             )}
                         </div>
+                    </div>
+                )}
+
+                {slideType === 'moneyMoves' && stats.volume && (
+                    <div className={`${styles.slide} ${styles.moneyMovesSlide} ${styles.greenTheme}`}>
+                        <p className={styles.slideLabel}>Big Money Moves</p>
+
+                        {stats.volume.highestValueSwap ? (
+                            <>
+                                <h3 className={styles.slideTitle}>Biggest Swap</h3>
+                                <div className={styles.bigNumber} style={{ fontSize: '3rem' }}>
+                                    ${formatNumber(Math.round(stats.volume.highestValueSwap.amountUSD))}
+                                </div>
+                                <p className={styles.slideSubtitle}>
+                                    IN {stats.volume.highestValueSwap.tokenSymbol}
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className={styles.slideTitle}>Largest Tx</h3>
+                                <div className={styles.bigNumber} style={{ fontSize: '3rem' }}>
+                                    {parseFloat(stats.volume.largestSingleTx.value).toFixed(2)} ETH
+                                </div>
+                                <p className={styles.slideSubtitle}>
+                                    Valued at ~${formatNumber(Math.round(parseFloat(stats.volume.largestSingleTx.value) * 3500))}
+                                </p>
+                            </>
+                        )}
+
+                        {stats.volume.totalSwapVolumeUSD && (
+                            <div className={styles.volumeBox}>
+                                <p className={styles.volumeLabel}>Total Volume</p>
+                                <div className={styles.volumeValue}>
+                                    ${formatNumber(Math.round(stats.volume.totalSwapVolumeUSD))}
+                                </div>
+                            </div>
+                        )}
+
+                        <p className={styles.funFact}>
+                            <span className={styles.icon}>💸</span>
+                            {stats.volume.highestValueSwap ? 'Whale alert! 🐋' : 'Moving chunks onchain'}
+                        </p>
                     </div>
                 )}
 
@@ -764,6 +833,22 @@ Get your Base Wrapped`;
                         </div>
 
                         <div className={styles.actionButtons}>
+                            {!isMintSuccess ? (
+                                <button
+                                    className={styles.mintButton}
+                                    onClick={handleMint}
+                                    disabled={isMintPending || isConfirming}
+                                >
+                                    <LucideIcon name="Diamond" size={20} />
+                                    {isMintPending || isConfirming ? 'Minting...' : 'Mint NFT (0.0001 ETH)'}
+                                </button>
+                            ) : (
+                                <button className={styles.mintButton} disabled>
+                                    <LucideIcon name="Check" size={20} />
+                                    Minted!
+                                </button>
+                            )}
+
                             <button className={styles.downloadButton} onClick={handleDownload}>
                                 <LucideIcon name="Image" size={20} />
                                 Save Card

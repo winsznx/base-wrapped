@@ -13,6 +13,7 @@ import {
     getFirstTransactionDate,
 } from './basescan';
 import { determinePersonality, calculateMilestones } from './personality';
+import { fetchZerionData } from './zerion';
 
 // Known dApp contract addresses on Base (expanded list)
 const KNOWN_DAPPS: Record<string, string> = {
@@ -104,7 +105,7 @@ export interface WrappedStats {
     totalValueReceivedEth: string;
 
     // dApp interactions
-    topDapps: Array<{ name: string; address: string; count: number }>;
+    topDapps: Array<{ name: string; address: string; count: number; imageUrl?: string }>;
     uniqueContractsInteracted: number;
 
     // NFTs
@@ -274,6 +275,13 @@ export interface WrappedStats {
             value: string;
             date: string;
         };
+        // New Zerion Data
+        highestValueSwap?: {
+            amountUSD: number;
+            tokenSymbol: string;
+            date: string;
+        };
+        totalSwapVolumeUSD?: number;
     };
 }
 
@@ -428,7 +436,7 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
     const normalizedAddress = address.toLowerCase();
 
     // Fetch all data in parallel
-    const [transactions, _internalTxs, tokenTransfers, nftTransfers, erc1155Transfers, contractCreations, originData] = await Promise.all([
+    const [transactions, _internalTxs, tokenTransfers, nftTransfers, erc1155Transfers, contractCreations, originData, zerionData] = await Promise.all([
         getTransactions(address),
         getInternalTransactions(address),
         getTokenTransfers(address),
@@ -436,6 +444,7 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
         getERC1155Transfers(address),
         getContractCreations(address),
         getFirstTransactionDate(address),
+        fetchZerionData(address),
     ]);
 
     // All NFTs combined
@@ -483,14 +492,27 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
         }
     });
 
-    const topDapps = Object.entries(contractCounts)
-        .map(([address, count]) => ({
-            address,
-            name: KNOWN_DAPPS[address] || `${address.slice(0, 6)}...${address.slice(-4)}`,
-            count
-        }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
+    let topDapps: Array<{ name: string; address: string; count: number; imageUrl?: string }> = [];
+
+    if (zerionData.topDapps && zerionData.topDapps.length > 0) {
+        // Use rich Zerion data
+        topDapps = zerionData.topDapps.map((d: any) => ({
+            name: d.name,
+            address: '', // Zerion might not give simple address for complex protocols, optional here
+            count: d.interactionCount || 0,
+            imageUrl: d.imageUrl
+        }));
+    } else {
+        // Fallback to RPC scanning
+        topDapps = Object.entries(contractCounts)
+            .map(([address, count]) => ({
+                address,
+                name: KNOWN_DAPPS[address] || `${address.slice(0, 6)}...${address.slice(-4)}`,
+                count
+            }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+    }
 
     // NFT stats
     const nftsMinted = allNFTs.filter(nft =>
@@ -675,6 +697,8 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
             value: weiToEth(largestTx?.value || '0'),
             date: largestTx?.timeStamp ? formatDate(largestTx.timeStamp) : '',
         },
+        highestValueSwap: zerionData.highestValueSwap,
+        totalSwapVolumeUSD: zerionData.totalSwapVolume,
     };
 
     return {

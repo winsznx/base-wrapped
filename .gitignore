@@ -30,3 +30,9 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+
+# Hardhat
+cache/
+artifacts/
+hardhat_deploy/
+typechain-types/
