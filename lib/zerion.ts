@@ -1,5 +1,3 @@
-import { WrappedStats } from './stats';
-
 const ZERION_API_KEY = process.env.ZERION_API_KEY;
 const BASE_CHAIN_ID = 'base'; // Zerion uses 'base' for Base chain
 
@@ -52,7 +50,11 @@ interface ZerionResponse {
     };
 }
 
-export async function fetchZerionData(address: string): Promise<Partial<WrappedStats>> {
+export async function fetchZerionData(address: string): Promise<{
+    topDapps?: Array<{ name: string; address: string; count: number; imageUrl?: string }>;
+    highestValueSwap?: { amountUSD: number; tokenSymbol: string; date: string };
+    totalSwapVolume?: number;
+}> {
     if (!ZERION_API_KEY) {
         console.warn("ZERION_API_KEY is missing. Skipping rich data fetch.");
         return {};
@@ -82,7 +84,11 @@ export async function fetchZerionData(address: string): Promise<Partial<WrappedS
     }
 }
 
-function processZerionStats(transactions: ZerionTransaction[], _userAddress: string): Partial<WrappedStats> {
+function processZerionStats(transactions: ZerionTransaction[], _userAddress: string): {
+    topDapps?: Array<{ name: string; address: string; count: number; imageUrl?: string }>;
+    highestValueSwap?: { amountUSD: number; tokenSymbol: string; date: string };
+    totalSwapVolume?: number;
+} {
     const dappsMap = new Map<string, { name: string, icon?: string, count: number }>();
     let highestValueSwap = {
         amountUSD: 0,
@@ -149,6 +155,6 @@ function processZerionStats(transactions: ZerionTransaction[], _userAddress: str
     return {
         topDapps: topDapps.length > 0 ? topDapps : undefined,
         highestValueSwap: highestValueSwap.amountUSD > 0 ? highestValueSwap : undefined,
-        totalSwapVolume: totalVolumeUSD
+        totalSwapVolume: totalVolumeUSD > 0 ? totalVolumeUSD : undefined,
     };
 }
