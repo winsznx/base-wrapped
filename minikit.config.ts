@@ -1,5 +1,9 @@
 const ROOT_URL = 'https://base-wrapped-nine.vercel.app';
 
+// Neynar Client ID for managed webhook - handles notification tokens automatically
+// Get this from https://dev.neynar.com/app
+const NEYNAR_CLIENT_ID = process.env.NEYNAR_CLIENT_ID || process.env.NEXT_PUBLIC_NEYNAR_CLIENT_ID;
+
 /**
  * MiniApp configuration for Base Wrapped - Your 2025 Onchain Year in Review.
  *
@@ -22,7 +26,11 @@ export const minikitConfig = {
     buttonTitle: "Get My Wrapped",
     splashImageUrl: `${ROOT_URL}/splash.png`,
     splashBackgroundColor: "#0052FF",
-    webhookUrl: `${ROOT_URL}/api/webhook`,
+    // Use Neynar's managed webhook for notification handling
+    // Falls back to custom webhook if client ID not set
+    webhookUrl: NEYNAR_CLIENT_ID
+      ? `https://api.neynar.com/f/app/${NEYNAR_CLIENT_ID}/event`
+      : `${ROOT_URL}/api/webhook`,
     primaryCategory: "social",
     tags: ["base", "wrapped", "onchain", "2025"],
     screenshotUrls: [`${ROOT_URL}/screenshot.png`],
@@ -31,6 +39,7 @@ export const minikitConfig = {
     ogTitle: "Base Wrapped 2025",
     ogDescription: "Discover your onchain story on Base. See your transaction count, gas spent, top dApps and more!",
     ogImageUrl: `${ROOT_URL}/og-image.png`,
+    builderCode: "bc_qjhuhb9o",
   },
 } as const;
 
