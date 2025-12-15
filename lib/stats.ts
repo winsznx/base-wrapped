@@ -499,7 +499,7 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
         topDapps = zerionData.topDapps.map((d) => ({
             name: d.name,
             address: '', // Zerion might not give simple address for complex protocols, optional here
-            count: d.interactionCount || 0,
+            count: d.count || 0,
             imageUrl: d.imageUrl
         }));
     } else {
