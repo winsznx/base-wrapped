@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { calculateWrappedStats } from '@/lib/stats';
 import { getBuilderData } from '@/lib/talentprotocol';
+import { getFarcasterData } from '@/lib/neynar';
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -24,10 +25,11 @@ export async function GET(request: NextRequest) {
     try {
         console.log(`Fetching wrapped stats for address: ${address}`);
 
-        // Fetch onchain stats and Talent Protocol data in parallel
-        const [stats, builderData] = await Promise.all([
+        // Fetch onchain stats, Talent Protocol, and Farcaster data in parallel
+        const [stats, builderData, farcasterData] = await Promise.all([
             calculateWrappedStats(address),
             getBuilderData(address),
+            getFarcasterData(address),
         ]);
 
         // Merge builder data into stats
@@ -72,6 +74,24 @@ export async function GET(request: NextRequest) {
                 category: cred.category,
                 points: cred.points,
             }));
+        }
+
+        // Add Farcaster data
+        if (farcasterData) {
+            stats.farcaster = {
+                fid: farcasterData.profile.fid,
+                username: farcasterData.profile.username,
+                displayName: farcasterData.profile.displayName,
+                pfpUrl: farcasterData.profile.pfpUrl,
+                bio: farcasterData.profile.bio,
+                followerCount: farcasterData.profile.followerCount,
+                followingCount: farcasterData.profile.followingCount,
+                hasPowerBadge: farcasterData.profile.hasPowerBadge,
+                verifiedAddresses: farcasterData.profile.verifiedAddresses,
+                totalCasts2025: farcasterData.castingStats?.totalCasts,
+                topChannels: farcasterData.castingStats?.topChannels,
+                followedChannels: farcasterData.followedChannels,
+            };
         }
 
         // Check if we got any data
