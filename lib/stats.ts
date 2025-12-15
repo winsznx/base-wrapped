@@ -496,7 +496,7 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
 
     if (zerionData.topDapps && zerionData.topDapps.length > 0) {
         // Use rich Zerion data
-        topDapps = zerionData.topDapps.map((d: any) => ({
+        topDapps = zerionData.topDapps.map((d) => ({
             name: d.name,
             address: '', // Zerion might not give simple address for complex protocols, optional here
             count: d.interactionCount || 0,

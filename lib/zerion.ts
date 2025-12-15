@@ -82,7 +82,7 @@ export async function fetchZerionData(address: string): Promise<Partial<WrappedS
     }
 }
 
-function processZerionStats(transactions: ZerionTransaction[], userAddress: string): Partial<WrappedStats> {
+function processZerionStats(transactions: ZerionTransaction[], _userAddress: string): Partial<WrappedStats> {
     const dappsMap = new Map<string, { name: string, icon?: string, count: number }>();
     let highestValueSwap = {
         amountUSD: 0,
