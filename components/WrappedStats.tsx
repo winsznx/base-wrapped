@@ -1,6 +1,6 @@
-'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { type WrappedStats } from '@/lib/stats';
 import styles from './WrappedStats.module.css';
 import { CountUp } from './ui/CountUp';
@@ -135,10 +135,7 @@ export function WrappedStats({ stats }: WrappedStatsProps) {
         }
     };
 
-    const handleShare = (e: React.MouseEvent) => {
-        e.stopPropagation();
-
-        // Construct dynamic URL params
+    const getShareUrl = () => {
         const params = new URLSearchParams();
         const name = stats.socials?.farcaster?.username || stats.talentProfile?.displayName || 'Base User';
         params.set('nm', name);
@@ -158,7 +155,13 @@ export function WrappedStats({ stats }: WrappedStatsProps) {
             params.set('builder', 'true');
         }
 
-        const appUrl = `https://base-wrapped-nine.vercel.app?${params.toString()}`;
+        return `https://base-wrapped-nine.vercel.app/api/og?${params.toString()}`;
+    };
+
+    const handleShare = (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        const shareUrl = getShareUrl();
 
         const emojiMap: Record<string, string> = {
             'Hammer': '🔨', 'TrendingUp': '📈', 'Image': '🖼️', 'MoveHorizontal': '🌉',
@@ -177,9 +180,30 @@ ${stats.builder?.isBuilder ? 'Verified Builder 🔨' : ''}
 
 Get your Base Wrapped`;
 
-        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(appUrl)}`;
+        // Direct Warpcast compose link with embedded OG image
+        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
 
         window.open(warpcastUrl, '_blank');
+    };
+
+    const handleDownload = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const shareUrl = getShareUrl();
+
+        try {
+            const response = await fetch(shareUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `base-wrapped-2025-${stats.socials?.farcaster?.username || 'user'}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error('Failed to download image:', err);
+        }
     };
 
     const slideType = SLIDES[currentSlide];
@@ -199,6 +223,19 @@ Get your Base Wrapped`;
                         )}
                         <h1 className={styles.heroTitle}>Your 2025</h1>
                         <h2 className={styles.heroSubtitle}>on Base</h2>
+
+                        {stats.socials?.farcaster && (
+                            <div className={styles.introSocials}>
+                                <div className={styles.socialBadge}>
+                                    <span className={styles.socialIcon}><LucideIcon name="MessageSquare" size={16} /></span>
+                                    <span>@{stats.socials.farcaster.username}</span>
+                                </div>
+                                <div className={styles.socialStats}>
+                                    <span>{formatNumber(stats.socials.farcaster.followers)} followers</span>
+                                </div>
+                            </div>
+                        )}
+
                         <p className={styles.tapHint}>Tap to continue</p>
                     </div>
                 )}
@@ -229,7 +266,9 @@ Get your Base Wrapped`;
                 {slideType === 'baseAppJoined' && stats.baseAppJoinDate && (
                     <div className={`${styles.slide} ${styles.baseAppJoinedSlide}`}>
                         <p className={styles.slideLabel}>Welcome to Base</p>
-                        <div className={styles.baseAppLogo}>🔵</div>
+                        <div className={styles.baseAppLogo}>
+                            <Image src="/base-square.svg" alt="Base" width={80} height={80} />
+                        </div>
                         <h2 className={styles.slideTitle}>You Joined Base App</h2>
                         <div className={styles.storyCard}>
                             <p className={styles.storyDate}>{stats.baseAppJoinDate.date}</p>
@@ -573,12 +612,13 @@ Get your Base Wrapped`;
                                 </p>
                             </>
                         ) : (
-                            <>
-                                <div className={styles.noScore}>
-                                    <p>No Builder Score found</p>
-                                    <p className={styles.funFact}>Claim your score at talent.protocol</p>
+                            <div className={styles.noScore}>
+                                <p>Builder Score not active</p>
+                                <div className={styles.scoreCircle} style={{ opacity: 0.5 }}>
+                                    <span className={styles.scoreValue}>0</span>
                                 </div>
-                            </>
+                                <p className={styles.funFact}>Claim your score at talent.protocol</p>
+                            </div>
                         )}
                     </div>
                 )}
@@ -655,9 +695,11 @@ Get your Base Wrapped`;
                     <div className={`${styles.slide} ${styles.farcasterSlide}`}>
                         <p className={styles.slideLabel}>Your Farcaster Presence</p>
                         {stats.farcaster.pfpUrl && (
-                            <img
+                            <Image
                                 src={stats.farcaster.pfpUrl}
                                 alt="Profile"
+                                width={80}
+                                height={80}
                                 className={styles.farcasterPfp}
                             />
                         )}
@@ -704,30 +746,33 @@ Get your Base Wrapped`;
 
                 {slideType === 'summary' && (
                     <div className={`${styles.slide} ${styles.summarySlide}`}>
-                        <h2 className={styles.summaryTitle}>2025 Wrapped</h2>
-                        <div className={styles.summaryGrid}>
-                            <div className={styles.summaryItem}>
-                                <span className={styles.summaryValue}>{stats.totalTransactions}</span>
-                                <span className={styles.summaryLabel}>Transactions</span>
+                        <p className={styles.slideLabel}>That&apos;s a Wrap!</p>
+                        <h2 className={styles.summaryTitle}>See you in 2026 🔵</h2>
+
+                        <div className={styles.summaryCard}>
+                            <div className={styles.summaryRow}>
+                                <span>Transactions</span>
+                                <span>{stats.totalTransactions}</span>
                             </div>
-                            <div className={styles.summaryItem}>
-                                <span className={styles.summaryValue}>{stats.totalGasSpentEth}</span>
-                                <span className={styles.summaryLabel}>ETH Gas</span>
+                            <div className={styles.summaryRow}>
+                                <span>Top Rank</span>
+                                <span>{stats.percentile ? (100 - stats.percentile.overall).toFixed(0) : '?'}%</span>
                             </div>
-                            <div className={styles.summaryItem}>
-                                <span className={styles.summaryValue}>{stats.nftsMinted}</span>
-                                <span className={styles.summaryLabel}>NFTs Minted</span>
-                            </div>
-                            <div className={styles.summaryItem}>
-                                <span className={styles.summaryValue}>{stats.uniqueContractsInteracted}</span>
-                                <span className={styles.summaryLabel}>dApps Used</span>
+                            <div className={styles.summaryArchetype}>
+                                {stats.personality?.title}
                             </div>
                         </div>
-                        <p className={styles.summaryTagline}>Based and onchain</p>
-                        <button className={styles.shareButton} onClick={handleShare}>
-                            <span className={styles.icon}>{Icons.share}</span>
-                            Share Your Wrapped
-                        </button>
+
+                        <div className={styles.actionButtons}>
+                            <button className={styles.downloadButton} onClick={handleDownload}>
+                                <LucideIcon name="Image" size={20} />
+                                Save Card
+                            </button>
+                            <button className={styles.shareButton} onClick={handleShare}>
+                                <LucideIcon name="Share2" size={20} />
+                                Share on Warpcast
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
@@ -765,6 +810,6 @@ Get your Base Wrapped`;
                     </svg>
                 </button>
             </div>
-        </div>
+        </div >
     );
 }
