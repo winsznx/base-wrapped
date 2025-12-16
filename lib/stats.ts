@@ -513,6 +513,8 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
             .sort((a, b) => b.count - a.count)
             .slice(0, 5);
     }
+    
+    console.log('[Stats] Final topDapps:', topDapps);
 
     // NFT stats
     const nftsMinted = allNFTs.filter(nft =>

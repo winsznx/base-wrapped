@@ -75,8 +75,12 @@ export async function fetchZerionData(address: string): Promise<{
 
         const data: ZerionResponse = await response.json();
         const transactions = data.data || [];
+        
+        console.log('[Zerion] Fetched transactions:', transactions.length);
+        const processed = processZerionStats(transactions, address);
+        console.log('[Zerion] Processed data:', processed);
 
-        return processZerionStats(transactions, address);
+        return processed;
 
     } catch (error) {
         console.error("Failed to fetch Zerion data:", error);
@@ -151,6 +155,8 @@ function processZerionStats(transactions: ZerionTransaction[], _userAddress: str
             count: d.count,
             address: '' // Zerion might not provide a single contract address for an app
         }));
+    
+    console.log('[Zerion] Top dApps:', topDapps);
 
     return {
         topDapps: topDapps.length > 0 ? topDapps : undefined,

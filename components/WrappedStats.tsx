@@ -193,10 +193,10 @@ export function WrappedStats({ stats }: WrappedStatsProps) {
         const emojiMap: Record<string, string> = {
             'Hammer': '🔨', 'TrendingUp': '📈', 'Image': '🖼️', 'MoveHorizontal': '🌉',
             'Zap': '⚡', 'Laugh': '🐸', 'Sunrise': '🌅', 'Anchor': '🐋',
-            'MessagesSquare': '🦋', 'Gem': '💎', 'Compass': '🧭', 'Trophy': '🏆',
-            'Crown': '👑', 'Award': '💯', 'Paintbrush': '🎨'
+            'MessageSquare': '💬', 'Gem': '💎', 'Compass': '🧭', 'Trophy': '🏆',
+            'Crown': '👑', 'Award': '🏅', 'Paintbrush': '🎨', 'Fuel': '⛽', 'Diamond': '💎'
         };
-        const pEmoji = stats.personality ? (emojiMap[stats.personality.emoji] || '✨') : '';
+        const pEmoji = stats.personality ? (emojiMap[stats.personality.emoji] || stats.personality.emoji) : '';
 
         const shareText = `My 2025 on Base:
 ${stats.personality ? `I'm a ${stats.personality.title} ${pEmoji}` : ''}
@@ -207,10 +207,10 @@ ${stats.builder?.isBuilder ? 'Verified Builder 🔨' : ''}
 
 Get your Base Wrapped`;
 
-        // Direct Warpcast compose link with embedded OG image
-        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
+        // Use Farcaster protocol link to open in Farcaster app
+        const farcasterUrl = `farcaster://compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
 
-        window.open(warpcastUrl, '_blank');
+        window.location.href = farcasterUrl;
     };
 
     const handleDownload = async (e: React.MouseEvent) => {
@@ -881,7 +881,7 @@ Get your Base Wrapped`;
                             </button>
                             <button className={styles.shareButton} onClick={handleShare}>
                                 <LucideIcon name="Share2" size={20} />
-                                Share on Warpcast
+                                Share on Farcaster
                             </button>
                         </div>
                     </div>
