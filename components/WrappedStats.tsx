@@ -207,8 +207,8 @@ ${stats.builder?.isBuilder ? 'Verified Builder 🔨' : ''}
 
 Get your Base Wrapped`;
 
-        // Use Farcaster protocol link to open in Farcaster app
-        const farcasterUrl = `farcaster://compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
+        // Use Farcaster protocol link with correct +cast format
+        const farcasterUrl = `farcaster://+cast=${encodeURIComponent(shareText)}`;
 
         window.location.href = farcasterUrl;
     };
