@@ -223,7 +223,7 @@ Get your Base Wrapped`;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `base-wrapped-2025-${stats.socials?.farcaster?.username || 'user'}.png`;
+            a.download = `base-wrapped-2025-${stats.farcaster?.username || 'user'}.png`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
