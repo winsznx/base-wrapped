@@ -50,7 +50,27 @@ const ALL_SLIDES: SlideType[] = [
 // Helper to render Lucide icons by name
 const IconMap: Record<string, React.ElementType> = {
     Hammer, TrendingUp, Image: ImageIcon, MoveHorizontal, Zap, Laugh, Sunrise,
-    Anchor, MessagesSquare: MessageSquare, Gem, Compass, Trophy, Crown, Award, Paintbrush, Diamond
+    Anchor, MessageSquare, Gem, Compass, Trophy, Crown, Award, Paintbrush,
+    Fuel, Check, X, Share2, Github, Twitter, Link: LinkIcon, Diamond
+};
+
+// Helper to format account source names
+const formatAccountSource = (source: string): string => {
+    const sourceMap: Record<string, string> = {
+        'wallet': 'Wallet',
+        'farcaster': 'Farcaster',
+        'twitter': 'Twitter',
+        'x_twitter': 'X (Twitter)',
+        'github': 'GitHub',
+        'linkedin': 'LinkedIn',
+        'lens': 'Lens Protocol',
+        'talent_protocol': 'Talent Protocol',
+        'ens': 'ENS',
+        'email': 'Email',
+        'discord': 'Discord',
+        'telegram': 'Telegram'
+    };
+    return sourceMap[source.toLowerCase()] || source.charAt(0).toUpperCase() + source.slice(1);
 };
 
 const LucideIcon = ({ name, size = 24, className }: { name: string, size?: number, className?: string }) => {
@@ -238,24 +258,33 @@ Get your Base Wrapped`;
                 {slideType === 'intro' && (
                     <div className={`${styles.slide} ${styles.introSlide}`}>
                         {/* Show personalized greeting if we have a name */}
-                        {(stats.socials?.farcaster?.username || stats.talentProfile?.displayName) && (
+                        {(stats.farcaster?.username || stats.talentProfile?.displayName) && (
                             <p className={styles.welcomeText}>
-                                Hey, {stats.socials?.farcaster?.username
-                                    ? `@${stats.socials.farcaster.username}`
+                                Hey, {stats.farcaster?.username
+                                    ? `${stats.farcaster.username}`
                                     : stats.talentProfile?.displayName}! 👋
                             </p>
                         )}
                         <h1 className={styles.heroTitle}>Your 2025</h1>
                         <h2 className={styles.heroSubtitle}>on Base</h2>
 
-                        {stats.socials?.farcaster && (
+                        {stats.farcaster && (
                             <div className={styles.introSocials}>
+                                {stats.farcaster.pfpUrl && (
+                                    <Image
+                                        src={stats.farcaster.pfpUrl}
+                                        alt="Profile"
+                                        width={48}
+                                        height={48}
+                                        className={styles.introPfp}
+                                    />
+                                )}
                                 <div className={styles.socialBadge}>
                                     <span className={styles.socialIcon}><LucideIcon name="MessageSquare" size={16} /></span>
-                                    <span>@{stats.socials.farcaster.username}</span>
+                                    <span>@{stats.farcaster.username}</span>
                                 </div>
                                 <div className={styles.socialStats}>
-                                    <span>{formatNumber(stats.socials.farcaster.followers)} followers</span>
+                                    <span>{formatNumber(stats.farcaster.followerCount)} followers</span>
                                 </div>
                             </div>
                         )}
@@ -731,7 +760,7 @@ Get your Base Wrapped`;
                                         <span className={styles.icon}>
                                             {acc.verified ? Icons.check : Icons.x}
                                         </span>
-                                        <span>{acc.source}</span>
+                                        <span>{formatAccountSource(acc.source)}</span>
                                     </div>
                                 ))}
                             </div>
