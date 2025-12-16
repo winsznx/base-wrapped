@@ -162,33 +162,9 @@ export function WrappedStats({ stats }: WrappedStatsProps) {
         }
     };
 
-    const getShareUrl = () => {
-        const params = new URLSearchParams();
-        const name = stats.socials?.farcaster?.username || stats.talentProfile?.displayName || 'Base User';
-        params.set('nm', name);
-
-        if (stats.personality) {
-            params.set('p', stats.personality.title);
-            params.set('color', stats.personality.color);
-        }
-
-        params.set('tx', stats.totalTransactions.toString());
-
-        if (stats.percentile) {
-            params.set('pct', (100 - stats.percentile.overall).toFixed(1));
-        }
-
-        if (stats.builder && stats.builder.isBuilder) {
-            params.set('builder', 'true');
-        }
-
-        return `https://base-wrapped-nine.vercel.app/api/og?${params.toString()}`;
-    };
 
     const handleShare = (e: React.MouseEvent) => {
         e.stopPropagation();
-
-        const shareUrl = getShareUrl();
 
         const emojiMap: Record<string, string> = {
             'Hammer': '🔨', 'TrendingUp': '📈', 'Image': '🖼️', 'MoveHorizontal': '🌉',
@@ -213,23 +189,64 @@ Get your Base Wrapped`;
         window.location.href = farcasterUrl;
     };
 
+
     const handleDownload = async (e: React.MouseEvent) => {
         e.stopPropagation();
-        const shareUrl = getShareUrl();
 
         try {
-            const response = await fetch(shareUrl);
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `base-wrapped-2025-${stats.farcaster?.username || 'user'}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            // Dynamically import html2canvas
+            const html2canvas = (await import('html2canvas')).default;
+
+            // Get the current slide element
+            const slideElement = document.querySelector(`.${styles.slide}`) as HTMLElement;
+            if (!slideElement) {
+                console.error('Slide element not found');
+                return;
+            }
+
+            // Capture the slide as canvas
+            const canvas = await html2canvas(slideElement, {
+                backgroundColor: null,
+                scale: 2, // Higher quality
+                logging: false,
+            });
+
+            // Convert canvas to blob
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
+
+                const filename = `base-wrapped-2025-${stats.farcaster?.username || 'user'}.png`;
+
+                // Try native share API first (works on mobile)
+                if (navigator.share && navigator.canShare) {
+                    const file = new File([blob], filename, { type: 'image/png' });
+                    if (navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'My Base Wrapped 2025',
+                                text: 'Check out my Base Wrapped!',
+                            });
+                            return;
+                        } catch (err) {
+                            // User cancelled or share failed, fall through to download
+                            console.log('Share cancelled or failed:', err);
+                        }
+                    }
+                }
+
+                // Fallback to download (desktop)
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
         } catch (err) {
-            console.error('Failed to download image:', err);
+            console.error('Failed to save card:', err);
         }
     };
 
