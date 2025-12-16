@@ -225,7 +225,8 @@ Get your Base Wrapped`;
                             await navigator.share({
                                 files: [file],
                                 title: 'My Base Wrapped 2025',
-                                text: 'Check out my Base Wrapped!',
+                                text: `Check out my Base Wrapped 2025!\n\n${stats.totalTransactions} transactions on Base\n${stats.personality ? `I'm a ${stats.personality.title}` : ''}\n\nGet yours at:`,
+                                url: 'https://base-wrapped-nine.vercel.app',
                             });
                             return;
                         } catch (err) {
