@@ -49,7 +49,7 @@ export default function RootLayout({
     <RootProvider>
       <html lang="en">
         <body className={`${spaceGrotesk.variable} ${sourceCodePro.variable}`}>
-          <SafeArea>{children}</SafeArea>
+          {children}
         </body>
       </html>
     </RootProvider>

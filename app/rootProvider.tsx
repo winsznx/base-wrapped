@@ -1,30 +1,15 @@
 "use client";
 import { ReactNode } from "react";
-import { base } from "wagmi/chains";
-import { OnchainKitProvider } from "@coinbase/onchainkit";
-import "@coinbase/onchainkit/styles.css";
+import { WagmiProvider } from 'wagmi'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { wagmiAdapter, queryClient } from '@/lib/reown-config'
 
 export function RootProvider({ children }: { children: ReactNode }) {
   return (
-    <OnchainKitProvider
-      apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-      chain={base}
-      config={{
-        appearance: {
-          mode: "auto",
-        },
-        wallet: {
-          display: "modal",
-          preference: "all",
-        },
-      }}
-      miniKit={{
-        enabled: true,
-        autoConnect: true,
-        notificationProxyUrl: undefined,
-      }}
-    >
-      {children}
-    </OnchainKitProvider>
+    <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
