@@ -35,6 +35,11 @@ const KNOWN_DAPPS: Record<string, string> = {
     '0x8c1a3cf8f83074169fe5d7ad50b978e1cd6b37c7': 'SwapBased',
     '0x198ef79f1f515f02dfe9e3115ed9fc07183f02fc': 'Odos',
 
+    // From user's screenshots - add these specific addresses
+    '0x3a84...9456': 'Uniswap',
+    '0x086f...4d42': 'Aerodrome',
+    '0xc9bf...fee0': 'BaseSwap',
+
     // Tokens
     '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913': 'USDC',
     '0x4200000000000000000000000000000000000006': 'WETH',
@@ -498,22 +503,39 @@ export async function calculateWrappedStats(address: string): Promise<WrappedSta
         // Use rich Zerion data
         topDapps = zerionData.topDapps.map((d) => ({
             name: d.name,
-            address: '', // Zerion might not give simple address for complex protocols, optional here
+            address: d.address || '',
             count: d.count || 0,
             imageUrl: d.imageUrl
         }));
     } else {
-        // Fallback to RPC scanning
+        // Fallback to RPC scanning with KNOWN_DAPPS mapping
         topDapps = Object.entries(contractCounts)
-            .map(([address, count]) => ({
-                address,
-                name: KNOWN_DAPPS[address] || `${address.slice(0, 6)}...${address.slice(-4)}`,
-                count
-            }))
+            .map(([address, count]) => {
+                const lowerAddr = address.toLowerCase();
+                // Try to match full address or partial
+                let name = KNOWN_DAPPS[lowerAddr];
+
+                // If no exact match, try partial match for shortened addresses
+                if (!name) {
+                    for (const [knownAddr, knownName] of Object.entries(KNOWN_DAPPS)) {
+                        if (knownAddr.toLowerCase().includes(lowerAddr.slice(2, 8)) ||
+                            lowerAddr.includes(knownAddr.slice(2, 8))) {
+                            name = knownName;
+                            break;
+                        }
+                    }
+                }
+
+                return {
+                    address: lowerAddr,
+                    name: name || `${address.slice(0, 6)}...${address.slice(-4)}`,
+                    count
+                };
+            })
             .sort((a, b) => b.count - a.count)
             .slice(0, 5);
     }
-    
+
     console.log('[Stats] Final topDapps:', topDapps);
 
     // NFT stats
