@@ -63,9 +63,9 @@ export default function HomeClient() {
     // Initialize the miniapp
     useEffect(() => {
         if (!isFrameReady) {
-            setFrameReady();
+            setFrameReady(true);
         }
-    }, [setFrameReady, isFrameReady]);
+    }, [isFrameReady]);
 
     const handleIntroComplete = useCallback(() => {
         setViewState('landing');
