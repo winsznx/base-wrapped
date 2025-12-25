@@ -1,28 +1,20 @@
 "use client";
 
-import { useComposeCast } from '@coinbase/onchainkit/minikit';
 import { minikitConfig } from "../../minikit.config";
 import styles from "./page.module.css";
 
 export default function Success() {
 
-  const { composeCastAsync } = useComposeCast();
-
   const handleShare = async () => {
     try {
+      const { sdk } = await import('@farcaster/miniapp-sdk');
+
       const text = `Yay! I just joined the waitlist for ${minikitConfig.miniapp.name.toUpperCase()}! `;
 
-      const result = await composeCastAsync({
+      await sdk.actions.composeCast({
         text: text,
-        embeds: [process.env.NEXT_PUBLIC_URL || ""]
+        embeds: [process.env.NEXT_PUBLIC_URL || "https://base-wrapped-nine.vercel.app"]
       });
-
-      // result.cast can be null if user cancels
-      if (result?.cast) {
-        console.log("Cast created successfully:", result.cast.hash);
-      } else {
-        console.log("User cancelled the cast");
-      }
     } catch (error) {
       console.error("Error sharing cast:", error);
     }

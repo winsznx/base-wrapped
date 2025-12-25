@@ -163,30 +163,38 @@ export function WrappedStats({ stats }: WrappedStatsProps) {
     };
 
 
-    const handleShare = (e: React.MouseEvent) => {
+    const handleShare = async (e: React.MouseEvent) => {
         e.stopPropagation();
 
-        const emojiMap: Record<string, string> = {
-            'Hammer': '🔨', 'TrendingUp': '📈', 'Image': '🖼️', 'MoveHorizontal': '🌉',
-            'Zap': '⚡', 'Laugh': '🐸', 'Sunrise': '🌅', 'Anchor': '🐋',
-            'MessageSquare': '💬', 'Gem': '💎', 'Compass': '🧭', 'Trophy': '🏆',
-            'Crown': '👑', 'Award': '🏅', 'Paintbrush': '🎨', 'Fuel': '⛽', 'Diamond': '💎'
-        };
-        const pEmoji = stats.personality ? (emojiMap[stats.personality.emoji] || stats.personality.emoji) : '';
+        try {
+            // Dynamically import Farcaster SDK
+            const { sdk } = await import('@farcaster/miniapp-sdk');
 
-        const shareText = `My 2025 on Base:
+            const emojiMap: Record<string, string> = {
+                'Hammer': '🔨', 'TrendingUp': '📈', 'Image': '🖼️', 'MoveHorizontal': '🌉',
+                'Zap': '⚡', 'Laugh': '🐸', 'Sunrise': '🌅', 'Anchor': '🐋',
+                'MessageSquare': '💬', 'Gem': '💎', 'Compass': '🧭', 'Trophy': '🏆',
+                'Crown': '👑', 'Award': '🏅', 'Paintbrush': '🎨', 'Fuel': '⛽', 'Diamond': '💎'
+            };
+            const pEmoji = stats.personality ? (emojiMap[stats.personality.emoji] || stats.personality.emoji) : '';
+
+            const shareText = `My 2025 on Base:
 ${stats.personality ? `I'm a ${stats.personality.title} ${pEmoji}` : ''}
 
 ${stats.totalTransactions} Transactions
 Top ${stats.percentile ? (100 - stats.percentile.overall).toFixed(1) : '?'}% of users
 ${stats.builder?.isBuilder ? 'Verified Builder 🔨' : ''}
 
-Get your Base Wrapped`;
+Get your Base Wrapped at base-wrapped-nine.vercel.app`;
 
-        // Use Farcaster protocol link with correct +cast format
-        const farcasterUrl = `farcaster://+cast=${encodeURIComponent(shareText)}`;
-
-        window.location.href = farcasterUrl;
+            // Use Farcaster SDK composeCast action
+            await sdk.actions.composeCast({
+                text: shareText,
+                embeds: ['https://base-wrapped-nine.vercel.app']
+            });
+        } catch (error) {
+            console.error('Failed to compose cast:', error);
+        }
     };
 
 
