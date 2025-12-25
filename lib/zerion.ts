@@ -146,15 +146,37 @@ function processZerionStats(transactions: ZerionTransaction[], _userAddress: str
     }
 
     // Sort Dapps by count
+    const KNOWN_DAPPS: Record<string, string> = {
+        '0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24': 'Uniswap',
+        '0x2626664c2603336e57b271c5c0b26f421741e481': 'Uniswap V3',
+        '0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad': 'Uniswap Universal Router',
+        '0xcf77a3ba9a5ca399b7c97c74d54e5b1beb874e43': 'Aerodrome',
+        '0x940181a94a35a4569e4529a3cdf79ca2d8f85cb9': 'Aerodrome Router',
+        '0x420dd381b31aef6683db6b902084cb0ffece40da': 'Aerodrome Voter',
+        '0x327df1e6de05895d2ab08513aadd9313fe505d86': 'BaseSwap',
+        '0x1111111254fb6c44bac0bed2854e76f90643097d': '1inch',
+        '0x198ef79f1f515f02dfe9e3115ed9fc07183f02fc': 'Odos',
+    };
+
     const topDapps = Array.from(dappsMap.values())
         .sort((a, b) => b.count - a.count)
         .slice(0, 5)
-        .map(d => ({
-            name: d.name,
-            imageUrl: d.icon,
-            count: d.count,
-            address: '' // Zerion might not provide a single contract address for an app
-        }));
+        .map(d => {
+            let finalName = d.name;
+
+            // If name looks like an address (starts with 0x), try to find it in KNOWN_DAPPS
+            if (finalName.startsWith('0x')) {
+                const lowerName = finalName.toLowerCase();
+                finalName = KNOWN_DAPPS[lowerName] || finalName;
+            }
+
+            return {
+                name: finalName,
+                imageUrl: d.icon,
+                count: d.count,
+                address: ''
+            };
+        });
 
     console.log('[Zerion] Top dApps:', topDapps);
 
