@@ -19,20 +19,17 @@ const metadata = {
     icons: ['https://base-wrapped-nine.vercel.app/icon.png']
 }
 
-// 3. Set the networks
-const networks = [base]
-
-// 4. Create Wagmi Adapter
+// 3. Create Wagmi Adapter
 export const wagmiAdapter = new WagmiAdapter({
-    networks,
+    networks: [base],
     projectId,
     ssr: true
 })
 
-// 5. Create modal
+// 4. Create modal
 createAppKit({
     adapters: [wagmiAdapter],
-    networks,
+    networks: [base],
     projectId,
     metadata,
     features: {
