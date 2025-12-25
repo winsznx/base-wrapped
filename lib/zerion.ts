@@ -65,7 +65,7 @@ export async function fetchZerionData(address: string): Promise<{
         const response = await fetch(url, {
             headers: {
                 'accept': 'application/json',
-                'authorization': `Basic ${ZERION_API_KEY}`
+                'authorization': `Basic ${Buffer.from(ZERION_API_KEY + ':').toString('base64')}`
             }
         });
 
@@ -75,7 +75,7 @@ export async function fetchZerionData(address: string): Promise<{
 
         const data: ZerionResponse = await response.json();
         const transactions = data.data || [];
-        
+
         console.log('[Zerion] Fetched transactions:', transactions.length);
         const processed = processZerionStats(transactions, address);
         console.log('[Zerion] Processed data:', processed);
@@ -155,7 +155,7 @@ function processZerionStats(transactions: ZerionTransaction[], _userAddress: str
             count: d.count,
             address: '' // Zerion might not provide a single contract address for an app
         }));
-    
+
     console.log('[Zerion] Top dApps:', topDapps);
 
     return {

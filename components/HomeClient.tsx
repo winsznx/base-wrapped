@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useAccount, useConnect } from "wagmi";
 import Image from "next/image";
 import { IntroAnimation } from "@/components/IntroAnimation";
@@ -52,9 +51,9 @@ const Icons = {
 };
 
 export default function HomeClient() {
-    const { isFrameReady, setFrameReady } = useMiniKit();
     const { address: connectedAddress, isConnected } = useAccount();
     const { connect, connectors } = useConnect();
+    const [isFrameReady, setFrameReady] = useState(false);
     const [viewState, setViewState] = useState<ViewState>('intro');
     const [stats, setStats] = useState<WrappedStatsType | null>(null);
     const [error, setError] = useState("");
@@ -64,9 +63,9 @@ export default function HomeClient() {
     // Initialize the miniapp
     useEffect(() => {
         if (!isFrameReady) {
-            setFrameReady();
+            setFrameReady(true);
         }
-    }, [setFrameReady, isFrameReady]);
+    }, [isFrameReady]);
 
     const handleIntroComplete = useCallback(() => {
         setViewState('landing');
