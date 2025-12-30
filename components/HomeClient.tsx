@@ -58,7 +58,6 @@ export default function HomeClient() {
     const [error, setError] = useState("");
     const [manualAddress, setManualAddress] = useState("");
     const [showAddressInput, setShowAddressInput] = useState(false);
-    const [farcasterAddress, setFarcasterAddress] = useState<string | null>(null);
 
     // Initialize Farcaster SDK, signal ready, and get user context
     useEffect(() => {
