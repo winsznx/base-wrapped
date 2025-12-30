@@ -58,8 +58,9 @@ export default function HomeClient() {
     const [error, setError] = useState("");
     const [manualAddress, setManualAddress] = useState("");
     const [showAddressInput, setShowAddressInput] = useState(false);
+    const [farcasterAddress, setFarcasterAddress] = useState<string | null>(null);
 
-    // Initialize Farcaster SDK and signal ready
+    // Initialize Farcaster SDK, signal ready, and get user context
     useEffect(() => {
         const initFarcasterSDK = async () => {
             try {
@@ -68,6 +69,14 @@ export default function HomeClient() {
                 // Signal that the app is ready
                 sdk.actions.ready();
                 console.log('Farcaster SDK ready called');
+
+                // Get Farcaster context to auto-connect wallet
+                const context = await sdk.context;
+                if (context?.user?.verifiedAddresses?.ethAddresses?.[0]) {
+                    const address = context.user.verifiedAddresses.ethAddresses[0];
+                    setFarcasterAddress(address);
+                    console.log('Farcaster wallet auto-detected:', address);
+                }
             } catch (error) {
                 console.error('Failed to initialize Farcaster SDK:', error);
             }
@@ -78,7 +87,12 @@ export default function HomeClient() {
 
     const handleIntroComplete = useCallback(() => {
         setViewState('landing');
-    }, []);
+
+        // Auto-load wrapped if Farcaster wallet is detected
+        if (farcasterAddress) {
+            fetchStats(farcasterAddress);
+        }
+    }, [farcasterAddress, fetchStats]);
 
     const fetchStats = useCallback(async (userAddress: string) => {
         setViewState('loading');
