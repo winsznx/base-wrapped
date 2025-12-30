@@ -58,8 +58,9 @@ export default function HomeClient() {
     const [error, setError] = useState("");
     const [manualAddress, setManualAddress] = useState("");
     const [showAddressInput, setShowAddressInput] = useState(false);
+    const [autoDetectedAddress, setAutoDetectedAddress] = useState<string | null>(null);
 
-    // Initialize Farcaster SDK and signal ready
+    // Initialize Farcaster SDK, signal ready, and fetch wallet from FID
     useEffect(() => {
         const initFarcasterSDK = async () => {
             try {
@@ -68,6 +69,30 @@ export default function HomeClient() {
                 // Signal that the app is ready
                 sdk.actions.ready();
                 console.log('Farcaster SDK ready called');
+
+                // Get Farcaster context to fetch wallet
+                const context = await sdk.context;
+                console.log('Farcaster context:', context);
+
+                // If we have a FID, use Neynar to get verified addresses
+                if (context?.user?.fid) {
+                    const fid = context.user.fid;
+                    console.log('Farcaster user detected, FID:', fid);
+
+                    try {
+                        // Fetch user data from Neynar to get verified addresses
+                        const response = await fetch(`/api/auth?fid=${fid}`);
+                        const data = await response.json();
+
+                        if (data.verifiedAddresses?.ethAddresses?.[0]) {
+                            const address = data.verifiedAddresses.ethAddresses[0];
+                            setAutoDetectedAddress(address);
+                            console.log('Auto-detected Farcaster wallet:', address);
+                        }
+                    } catch (err) {
+                        console.error('Failed to fetch wallet from Neynar:', err);
+                    }
+                }
             } catch (error) {
                 console.error('Failed to initialize Farcaster SDK:', error);
             }
@@ -78,7 +103,13 @@ export default function HomeClient() {
 
     const handleIntroComplete = useCallback(() => {
         setViewState('landing');
-    }, []);
+
+        // Auto-load wrapped if we detected a wallet
+        const addressToUse = autoDetectedAddress || connectedAddress;
+        if (addressToUse) {
+            fetchStats(addressToUse);
+        }
+    }, [autoDetectedAddress, connectedAddress]);
 
     const fetchStats = useCallback(async (userAddress: string) => {
         setViewState('loading');
