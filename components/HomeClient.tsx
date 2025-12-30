@@ -72,10 +72,13 @@ export default function HomeClient() {
 
                 // Get Farcaster context to auto-connect wallet
                 const context = await sdk.context;
-                if (context?.user?.verifiedAddresses?.ethAddresses?.[0]) {
-                    const address = context.user.verifiedAddresses.ethAddresses[0];
-                    setFarcasterAddress(address);
-                    console.log('Farcaster wallet auto-detected:', address);
+                console.log('Farcaster context:', context);
+
+                // Try to get custody address as fallback
+                if (context?.user?.fid) {
+                    // For now, we'll let the user connect manually
+                    // The Farcaster context doesn't expose ETH addresses directly in v0.1.x
+                    console.log('Farcaster user detected, FID:', context.user.fid);
                 }
             } catch (error) {
                 console.error('Failed to initialize Farcaster SDK:', error);
@@ -87,12 +90,7 @@ export default function HomeClient() {
 
     const handleIntroComplete = useCallback(() => {
         setViewState('landing');
-
-        // Auto-load wrapped if Farcaster wallet is detected
-        if (farcasterAddress) {
-            fetchStats(farcasterAddress);
-        }
-    }, [farcasterAddress, fetchStats]);
+    }, []);
 
     const fetchStats = useCallback(async (userAddress: string) => {
         setViewState('loading');
