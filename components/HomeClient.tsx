@@ -81,13 +81,12 @@ export default function HomeClient() {
 
                     try {
                         // Fetch user data from Neynar to get verified addresses
-                        const response = await fetch(`/api/auth?fid=${fid}`);
+                        const response = await fetch(`/api/farcaster-user?fid=${fid}`);
                         const data = await response.json();
 
-                        if (data.verifiedAddresses?.ethAddresses?.[0]) {
-                            const address = data.verifiedAddresses.ethAddresses[0];
-                            setAutoDetectedAddress(address);
-                            console.log('Auto-detected Farcaster wallet:', address);
+                        if (data.success && data.primaryAddress) {
+                            setAutoDetectedAddress(data.primaryAddress);
+                            console.log('Auto-detected Farcaster wallet:', data.primaryAddress);
                         }
                     } catch (err) {
                         console.error('Failed to fetch wallet from Neynar:', err);
