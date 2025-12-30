@@ -53,19 +53,28 @@ const Icons = {
 export default function HomeClient() {
     const { address: connectedAddress, isConnected } = useAccount();
     const { connect, connectors } = useConnect();
-    const [isFrameReady, setFrameReady] = useState(false);
     const [viewState, setViewState] = useState<ViewState>('intro');
     const [stats, setStats] = useState<WrappedStatsType | null>(null);
     const [error, setError] = useState("");
     const [manualAddress, setManualAddress] = useState("");
     const [showAddressInput, setShowAddressInput] = useState(false);
 
-    // Initialize the miniapp
+    // Initialize Farcaster SDK and signal ready
     useEffect(() => {
-        if (!isFrameReady) {
-            setFrameReady(true);
-        }
-    }, [isFrameReady]);
+        const initFarcasterSDK = async () => {
+            try {
+                const { sdk } = await import('@farcaster/miniapp-sdk');
+
+                // Signal that the app is ready
+                sdk.actions.ready();
+                console.log('Farcaster SDK ready called');
+            } catch (error) {
+                console.error('Failed to initialize Farcaster SDK:', error);
+            }
+        };
+
+        initFarcasterSDK();
+    }, []);
 
     const handleIntroComplete = useCallback(() => {
         setViewState('landing');
