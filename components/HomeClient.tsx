@@ -76,20 +76,20 @@ export default function HomeClient() {
 
                 // If we have a FID, use Neynar to get verified addresses
                 if (context?.user?.fid) {
-                    const fid = context.user.fid;
-                    console.log('Farcaster user detected, FID:', fid);
+                    console.log('[Farcaster] User detected, FID:', context.user.fid);
 
                     try {
-                        // Fetch user data from Neynar to get verified addresses
-                        const response = await fetch(`/api/farcaster-user?fid=${fid}`);
-                        const data = await response.json();
+                        // Get the Ethereum provider from Farcaster SDK
+                        const provider = await sdk.wallet.getEthereumProvider();
 
-                        if (data.success && data.primaryAddress) {
-                            setAutoDetectedAddress(data.primaryAddress);
-                            console.log('Auto-detected Farcaster wallet:', data.primaryAddress);
+                        // Request accounts to get the connected wallet
+                        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+                        if (accounts && accounts.length > 0) {
+                            setAutoDetectedAddress(accounts[0]);
+                            console.log('[Farcaster] ✅ Wallet detected:', accounts[0]);
                         }
                     } catch (err) {
-                        console.error('Failed to fetch wallet from Neynar:', err);
+                        console.error('[Farcaster] Provider error:', err);
                     }
                 }
             } catch (error) {
