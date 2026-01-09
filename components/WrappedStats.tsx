@@ -217,13 +217,14 @@ Get your Base Wrapped at base-wrapped-nine.vercel.app`;
                 backgroundColor: null,
                 scale: 2, // Higher quality
                 logging: false,
+                useCORS: true,
             });
 
             // Convert canvas to blob
             canvas.toBlob(async (blob) => {
                 if (!blob) return;
 
-                const filename = `base-wrapped-2025-${stats.farcaster?.username || 'user'}.png`;
+                const filename = `base-wrapped-2025-${slideType}-${stats.farcaster?.username || 'user'}.png`;
 
                 // Try native share API first (works on mobile)
                 if (navigator.share && navigator.canShare) {
@@ -280,6 +281,18 @@ Get your Base Wrapped at base-wrapped-nine.vercel.app`;
 
     return (
         <div className={styles.container}>
+            {/* Floating Save Button - hide on summary since it has its own */}
+            {slideType !== 'summary' && (
+                <button
+                    className={styles.floatingSaveBtn}
+                    onClick={handleDownload}
+                    aria-label="Save this slide"
+                    title="Save this slide"
+                >
+                    <LucideIcon name="Image" size={24} />
+                </button>
+            )}
+
             <div className={styles.slideContainer} onClick={nextSlide}>
                 {slideType === 'intro' && (
                     <div className={`${styles.slide} ${styles.introSlide}`}>
