@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface CountUpProps {
     end: number;
@@ -10,6 +10,8 @@ interface CountUpProps {
     prefix?: string;
     delay?: number;
     className?: string;
+    onStart?: () => void;
+    onComplete?: () => void;
 }
 
 export function CountUp({
@@ -19,38 +21,45 @@ export function CountUp({
     suffix = '',
     prefix = '',
     delay = 0,
-    className
+    className,
+    onStart,
+    onComplete
 }: CountUpProps) {
     const [count, setCount] = useState(0);
+    const animationFrameId = useRef<number>();
 
     useEffect(() => {
         let startTime: number | null = null;
-        let animationFrameId: number;
-
-
+        
         const animate = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
+            if (!startTime) {
+                startTime = timestamp;
+                onStart?.(); // Callback when animation starts
+            }
+            
             const progress = timestamp - startTime;
 
             if (progress < duration) {
-                // Ease out expo function
                 const percentage = 1 - Math.pow(2, -10 * (progress / duration));
                 setCount(end * percentage);
-                animationFrameId = requestAnimationFrame(animate);
+                animationFrameId.current = requestAnimationFrame(animate);
             } else {
                 setCount(end);
+                onComplete?.(); // Callback when animation completes
             }
         };
 
         const timeoutId = setTimeout(() => {
-            animationFrameId = requestAnimationFrame(animate);
+            animationFrameId.current = requestAnimationFrame(animate);
         }, delay);
 
         return () => {
-            cancelAnimationFrame(animationFrameId);
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current);
+            }
             clearTimeout(timeoutId);
         };
-    }, [end, duration, delay]);
+    }, [end, duration, delay, onStart, onComplete]);
 
     return (
         <span className={className}>
