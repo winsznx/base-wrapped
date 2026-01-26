@@ -78,7 +78,7 @@ export default function AboutPage() {
             </main>
 
             <footer className={styles.footer}>
-                <p>2025 Base Wrapped</p>
+                <p>2025 OnChain Activity : Base Wrapped</p>
             </footer>
         </div>
     );
