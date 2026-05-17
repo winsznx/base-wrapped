@@ -47,6 +47,10 @@ const ALL_SLIDES: SlideType[] = [
     'summary'
 ];
 
+// Missing error handling for network/data issues
+const [error, setError] = useState<string | null>(null);
+const [isLoading, setIsLoading] = useState(false);
+
 // Helper to render Lucide icons by name
 const IconMap: Record<string, React.ElementType> = {
     Hammer, TrendingUp, Image: ImageIcon, MoveHorizontal, Zap, Laugh, Sunrise,
